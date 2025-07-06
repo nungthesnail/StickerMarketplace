@@ -1,11 +1,12 @@
-﻿using Marketplace.Core.Models.Enums;
+﻿using Marketplace.Core.Abstractions;
+using Marketplace.Core.Models.Enums;
 
 namespace Marketplace.Core.Models;
 
-public class ProjectTag
+public class ProjectTag : IEntity<long>
 {
-    public long Id { get; set; }
+    public long Id { get; init; }
     public required string Name { get; set; }
     public long? CreatedByUserId { get; set; }
-    public CategoryIdentifier Category { get; set; }
+    public User? CreatedByUser { get; set; }
 }

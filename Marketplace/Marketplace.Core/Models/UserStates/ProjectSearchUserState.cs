@@ -1,4 +1,5 @@
-﻿using Marketplace.Core.Models.Enums;
+﻿using Marketplace.Core.Models.Catalog;
+using Marketplace.Core.Models.Enums;
 using Marketplace.Core.Models.Enums.UserStates;
 
 namespace Marketplace.Core.Models.UserStates;
@@ -6,13 +7,10 @@ namespace Marketplace.Core.Models.UserStates;
 public class ProjectSearchUserState : IFormUserState<ProjectSearchProgress>
 {
     public long UserId { get; init; }
-    public CategoryIdentifier Category { get; set; }
-    public List<long> TagIds { get; set; } = [];
-    
+    public CatalogFilter Filter { get; set; } = new();
     public void Reset()
     {
-        Category = default;
-        TagIds.Clear();
+        Filter = new CatalogFilter();
         Progress = default;
     }
 

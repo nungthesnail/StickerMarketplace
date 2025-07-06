@@ -1,9 +1,12 @@
-﻿namespace Marketplace.Core.Models;
+﻿using Marketplace.Core.Abstractions;
 
-public class Subscription
+namespace Marketplace.Core.Models;
+
+public class Subscription : IEntity<long>
 {
-    public int Id { get; init; }
+    public long Id { get; init; }
     public long UserId { get; set; }
+    public User? User { get; set; }
     public DateTimeOffset? ActiveUntil => EnhancedUntil > BaseActiveUntil ? EnhancedUntil : BaseActiveUntil;
     public DateTimeOffset? BaseActiveUntil { get; set; }
     public DateTimeOffset? EnhancedUntil { get; set; }

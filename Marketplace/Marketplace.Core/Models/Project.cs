@@ -1,6 +1,8 @@
-﻿namespace Marketplace.Core.Models;
+﻿using Marketplace.Core.Abstractions;
 
-public class Project
+namespace Marketplace.Core.Models;
+
+public class Project : IEntity<long>
 {
     public long Id { get; init; }
     public long UserId { get; set; }
@@ -8,7 +10,8 @@ public class Project
     public string? Description { get; set; }
     public long? ImageId { get; set; }
     public string? ContentUrl { get; set; }
-    public bool Moderated { get; set; } = false;
+    public bool Moderated { get; set; }
+    public bool Visible { get; set; }
     
     public required ProjectTag Tag { get; set; }
     public required ProjectCategory Category { get; set; }

@@ -1,10 +1,11 @@
-﻿using Marketplace.Core.Models.Enums;
+﻿using Marketplace.Core.Abstractions;
+using Marketplace.Core.Models.Enums;
 
 namespace Marketplace.Core.Models;
 
-public class ProjectCategory
+public class ProjectCategory : IEntity<CategoryIdentifier>
 {
-    public CategoryIdentifier Id { get; set; }
+    public CategoryIdentifier Id { get; init; }
     public required string Name { get; set; }
     public string? Description { get; set; }
 }
