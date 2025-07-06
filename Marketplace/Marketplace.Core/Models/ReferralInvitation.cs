@@ -10,4 +10,5 @@ public class ReferralInvitation : IEntity<long>
     public long InvitingUserId { get; set; } // Issues invitation
     public User? InvitingUser { get; set; }
     public DateTimeOffset InvitedAt { get; set; }
+    public bool SubscriptionRenewed { get; set; }
 }

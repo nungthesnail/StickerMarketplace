@@ -1,4 +1,5 @@
-﻿using Marketplace.Core.Abstractions;
+﻿using System.Linq.Expressions;
+using Marketplace.Core.Abstractions;
 using Marketplace.Core.Abstractions.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,14 +8,14 @@ namespace Marketplace.EntityFrameworkCore.Implementations;
 public abstract class AbstractEfRepository<TEntity, TKey>(AppDbContext dbContext)
     : IRepository<TEntity, TKey> where TEntity : class, IEntity<TKey>
 {
-    public async Task AddAsync(TEntity entity, CancellationToken stoppingToken)
+    public async Task AddAsync(TEntity entity, CancellationToken stoppingToken = default)
         => await dbContext.AddAsync(entity, stoppingToken);
 
-    public async Task<TEntity?> GetByIdAsync(TKey id, CancellationToken stoppingToken)
+    public async Task<TEntity?> GetByIdAsync(TKey id, CancellationToken stoppingToken = default)
         => await dbContext.FindAsync<TEntity>([id], cancellationToken: stoppingToken);
 
-    public IAsyncEnumerable<TEntity> GetAllAsync(CancellationToken stoppingToken)
-        => dbContext.Set<TEntity>().AsAsyncEnumerable();
+    public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken stoppingToken)
+        => await dbContext.Set<TEntity>().ToListAsync(stoppingToken);
 
     public void Update(TEntity entity)
         => dbContext.Update(entity);
@@ -23,13 +24,12 @@ public abstract class AbstractEfRepository<TEntity, TKey>(AppDbContext dbContext
         => dbContext.Remove(entity);
 
     public async Task<IEnumerable<TEntity>> GetByAsync(
-        Func<TEntity, bool> predicate,
+        Expression<Func<TEntity, bool>> predicate,
         IEnumerable<string>? joins = null,
         CancellationToken stoppingToken = default)
     {
         var set = GetSetAndJoinProperties(joins);
         return await set
-            .AsEnumerable()
             .Where(predicate)
             .AsQueryable()
             .ToListAsync(stoppingToken);
@@ -43,14 +43,13 @@ public abstract class AbstractEfRepository<TEntity, TKey>(AppDbContext dbContext
     }
     
     public async Task<IEnumerable<TEntity>> GetByAsync<TOrderProperty>(
-        Func<TEntity, bool> predicate,
-        Func<TEntity, TOrderProperty> orderBy,
+        Expression<Func<TEntity, bool>> predicate,
+        Expression<Func<TEntity, TOrderProperty>> orderBy,
         IEnumerable<string>? joins = null,
         CancellationToken stoppingToken = default)
     {
         var set = GetSetAndJoinProperties(joins);
         return await set
-            .AsEnumerable()
             .Where(predicate)
             .OrderBy(orderBy)
             .AsQueryable()
@@ -58,10 +57,10 @@ public abstract class AbstractEfRepository<TEntity, TKey>(AppDbContext dbContext
     }
 
     public async Task UpdateByAsync<TProperty>(
-        Func<TEntity, bool> predicate,
+        Expression<Func<TEntity, bool>> predicate,
         Func<TEntity, TProperty> propertySelector,
         Func<TEntity, TProperty> valueSelector,
-        CancellationToken stoppingToken)
+        CancellationToken stoppingToken = default)
     {
         await dbContext
             .Set<TEntity>()
@@ -72,7 +71,8 @@ public abstract class AbstractEfRepository<TEntity, TKey>(AppDbContext dbContext
                 stoppingToken);
     }
 
-    public async Task DeleteByAsync(Func<TEntity, bool> predicate, CancellationToken stoppingToken)
+    public async Task DeleteByAsync(Expression<Func<TEntity, bool>> predicate,
+        CancellationToken stoppingToken = default)
     {
         await dbContext
             .Set<TEntity>()
@@ -80,4 +80,12 @@ public abstract class AbstractEfRepository<TEntity, TKey>(AppDbContext dbContext
             .AsQueryable()
             .ExecuteDeleteAsync(stoppingToken);
     }
+
+    public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate,
+        CancellationToken stoppingToken = default)
+        => await dbContext.Set<TEntity>().AnyAsync(predicate, stoppingToken);
+
+    public async Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate,
+        CancellationToken stoppingToken = default)
+        => await dbContext.Set<TEntity>().CountAsync(predicate, stoppingToken);
 }

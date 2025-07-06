@@ -13,7 +13,14 @@ public abstract class EfBaseUnitOfWork(DbContext dbContext) : IBaseUnitOfWork
     public async Task BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.Snapshot,
         CancellationToken stoppingToken = default)
     {
+        ThrowIfTransactionIsNotNull();
         _transaction = await dbContext.Database.BeginTransactionAsync(isolationLevel, stoppingToken);
+    }
+
+    private void ThrowIfTransactionIsNotNull()
+    {
+        if (_transaction is not null)
+            throw new InvalidOperationException($"There's an opened transaction: {_transaction}");
     }
 
     public async Task CreateTransactionSavepointAsync(string savepointName, CancellationToken stoppingToken = default)
@@ -40,12 +47,14 @@ public abstract class EfBaseUnitOfWork(DbContext dbContext) : IBaseUnitOfWork
     {
         ThrowIfTransactionIsNull();
         await _transaction.CommitAsync(stoppingToken);
+        _transaction = null;
     }
 
     public async Task RollbackTransactionAsync(CancellationToken stoppingToken = default)
     {
         ThrowIfTransactionIsNull();
         await _transaction.RollbackAsync(stoppingToken);
+        _transaction = null;
     }
 
     public async Task RollbackTransactionToSavepointAsync(string savepointName,
