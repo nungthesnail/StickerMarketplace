@@ -5,3 +5,5 @@ obj/
 .idea/
 riderModule.iml
 appsettings.development.json
+Marketplace/Marketplace.EntityFrameworkCore/Migrations/
+*.sln.Dotsettings.user
