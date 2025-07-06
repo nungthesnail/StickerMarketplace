@@ -8,4 +8,6 @@ public class ProjectCategory : IEntity<CategoryIdentifier>
     public CategoryIdentifier Id { get; init; }
     public required string Name { get; set; }
     public string? Description { get; set; }
+    
+    public List<Project>? Projects { get; set; }
 }

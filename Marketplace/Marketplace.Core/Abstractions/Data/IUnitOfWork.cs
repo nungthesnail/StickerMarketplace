@@ -9,5 +9,6 @@ public interface IUnitOfWork : IBaseUnitOfWork
     IProjectTagRepository ProjectTagRepository { get; }
     IProjectRepository ProjectRepository { get; }
     IProjectCategoryRepository ProjectCategoryRepository { get; }
+    ILikeRepository LikeRepository { get; }
     IComplaintRepository ComplaintRepository { get; }
 }

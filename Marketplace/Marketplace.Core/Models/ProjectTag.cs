@@ -9,4 +9,6 @@ public class ProjectTag : IEntity<long>
     public required string Name { get; set; }
     public long? CreatedByUserId { get; set; }
     public User? CreatedByUser { get; set; }
+
+    public List<Project>? Projects { get; set; } = [];
 }

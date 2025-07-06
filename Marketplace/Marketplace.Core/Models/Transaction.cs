@@ -9,6 +9,7 @@ public class Transaction : IEntity<Guid>
     public long UserId { get; init; }
     public User? User { get; init; }
     public decimal Amount { get; init; }
+    public required string Currency { get; init; }
     public TransactionPurpose Purpose { get; init; }
     public string? Comment { get; set; }
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.Now;
