@@ -328,6 +328,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .HasColumnName("visible")
                 .HasDefaultValue(true)
                 .IsRequired();
+            entity
+                .Property(x => x.CachedRating)
+                .HasColumnName("cached_rating")
+                .HasDefaultValue(0)
+                .IsRequired();
             
             entity
                 .HasIndex(x => x.Name)
@@ -342,6 +347,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity
                 .HasIndex(x => x.UserId)
                 .HasDatabaseName("project_user_id_index");
+            entity
+                .HasIndex(x => x.CachedRating)
+                .HasDatabaseName("project_cached_rating_index");
             
             entity
                 .HasOne(x => x.Category)

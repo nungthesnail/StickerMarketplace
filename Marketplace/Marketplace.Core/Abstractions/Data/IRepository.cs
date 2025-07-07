@@ -21,6 +21,13 @@ public interface IRepository<TEntity, TKey>
         Expression<Func<TEntity, TOrderProperty>> orderBy,
         IEnumerable<string>? joins = null,
         CancellationToken stoppingToken = default);
+
+    Task<IEnumerable<TAggregation>> GetByGroupsAsync<TGroupKey, TAggregation>(
+        Expression<Func<TEntity, bool>> predicate,
+        Expression<Func<TEntity, TGroupKey>> keySelector,
+        Expression<Func<IGrouping<TGroupKey, TEntity>, TAggregation>> groupSelector,
+        IEnumerable<string>? joins = null,
+        CancellationToken stoppingToken = default);
     
     Task UpdateByAsync<TProperty>(
         Expression<Func<TEntity, bool>> predicate,

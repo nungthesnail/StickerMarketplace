@@ -18,6 +18,7 @@ public class Project : IEntity<long>
     public ProjectTag? Tag { get; set; }
     public CategoryIdentifier CategoryId { get; set; }
     public ProjectCategory? Category { get; set; }
+    public double CachedRating { get; set; }
 
     public List<Like>? Likes { get; set; } = [];
     public List<Complaint> Complaints { get; set; } = [];

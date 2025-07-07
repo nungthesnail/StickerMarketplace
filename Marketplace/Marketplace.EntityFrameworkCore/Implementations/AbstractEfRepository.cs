@@ -56,6 +56,21 @@ public abstract class AbstractEfRepository<TEntity, TKey>(AppDbContext dbContext
             .ToListAsync(stoppingToken);
     }
 
+    public async Task<IEnumerable<TAggregation>> GetByGroupsAsync<TGroupKey, TAggregation>(
+        Expression<Func<TEntity, bool>> predicate,
+        Expression<Func<TEntity, TGroupKey>> keySelector,
+        Expression<Func<IGrouping<TGroupKey, TEntity>, TAggregation>> groupSelector,
+        IEnumerable<string>? joins = null,
+        CancellationToken stoppingToken = default)
+    {
+        var set = GetSetAndJoinProperties(joins);
+        return await set
+            .Where(predicate)
+            .GroupBy(keySelector)
+            .Select(groupSelector)
+            .ToListAsync(stoppingToken);
+    }
+
     public async Task UpdateByAsync<TProperty>(
         Expression<Func<TEntity, bool>> predicate,
         Func<TEntity, TProperty> propertySelector,

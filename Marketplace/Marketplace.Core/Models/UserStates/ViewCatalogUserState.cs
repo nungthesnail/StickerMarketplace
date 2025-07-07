@@ -5,12 +5,12 @@ namespace Marketplace.Core.Models.UserStates;
 public class ViewCatalogUserState : IUserState
 {
     public long UserId { get; init; }
-    public int Position { get; set; }
+    public required CatalogProjectView ProjectView { get; set; }
     public required CatalogFilter Filter { get; set; }
     
     public void Reset()
     {
-        Position = 0;
+        ProjectView = new();
         Filter = new CatalogFilter();
     }
 }

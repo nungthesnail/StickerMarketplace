@@ -46,6 +46,15 @@ public class ProjectService(IUnitOfWork uow) : IProjectService
             stoppingToken: stoppingToken);
     }
 
+    public async Task<List<Project>> GetProjectsOrderedByRatingAsync(CancellationToken stoppingToken = default)
+    {
+        return (await uow.ProjectRepository.GetByAsync(
+            predicate: x => x.Visible,
+            orderBy: x => -x.CachedRating, // Negative value to sort in descending order
+            joins: [nameof(Project.User)],
+            stoppingToken: stoppingToken)).ToList();
+    }
+
     public async Task<Project?> GetProjectByIdAsync(long projectId, CancellationToken stoppingToken = default)
         => await uow.ProjectRepository.GetByIdAsync(projectId, stoppingToken);
     
