@@ -2,12 +2,13 @@
 using Marketplace.Core.Abstractions.Data;
 using Marketplace.Core.Abstractions.Services;
 using Marketplace.Core.Models;
+using Marketplace.Utils;
 
 namespace Marketplace.Core.Implementations.Services;
 
 public class CatalogRefresherService(IUnitOfWork uow) : ICatalogRefresherService
 {
-    public event EventHandler? OnCatalogRefreshed;
+    public event AsyncEventHandler? OnCatalogRefreshed;
 
     public virtual async Task RefreshCatalogAsync(CancellationToken stoppingToken = default)
     {
@@ -25,7 +26,7 @@ public class CatalogRefresherService(IUnitOfWork uow) : ICatalogRefresherService
         }
 
         await uow.CommitTransactionAsync(stoppingToken);
-        FireRefreshedNotification();
+        await FireRefreshedNotificationAsync(stoppingToken);
     }
 
     // Calculation formula: Likes * Likes / Dislikes.
@@ -64,6 +65,12 @@ public class CatalogRefresherService(IUnitOfWork uow) : ICatalogRefresherService
             stoppingToken: stoppingToken);
     }
     
-    protected void FireRefreshedNotification()
-        => OnCatalogRefreshed?.Invoke(this, EventArgs.Empty);
+    protected Task FireRefreshedNotificationAsync(CancellationToken stoppingToken = default)
+        => OnCatalogRefreshed is null
+            ? Task.CompletedTask
+            : Task.WhenAll(
+                OnCatalogRefreshed
+                    .GetInvocationList()
+                    .Select(x => (Task)x.DynamicInvoke(stoppingToken)!)
+                    .ToList());
 }

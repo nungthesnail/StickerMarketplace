@@ -5,59 +5,52 @@ using Marketplace.Core.Models.Catalog;
 
 namespace Marketplace.InMemoryCache.Services;
 
-public class CatalogService
+public class CatalogService : ICatalogService
 {
     private readonly IProjectService _projectService;
     private readonly object _updateLock = new();
     
     private List<Project>? _orderedProjects;
-    private List<Project> Projects
-    {
-        get
-        {
-            if (_orderedProjects is null)
-                UpdateCatalog();
-            return _orderedProjects;
-        }
-    }
-
+    
     public CatalogService(IProjectService projectService, ICatalogRefresherService catalogRefresher)
     {
         _projectService = projectService;
-        catalogRefresher.OnCatalogRefreshed += (_, _) => UpdateCatalog();
+        catalogRefresher.OnCatalogRefreshed += UpdateCatalogAsync;
     }
     
     [MemberNotNull(nameof(_orderedProjects))]
-    private void UpdateCatalog()
+    private async Task UpdateCatalogAsync(CancellationToken stoppingToken = default)
     {
+        var projects = await _projectService.GetProjectsOrderedByRatingAsync(stoppingToken);
         lock (_updateLock)
         {
-            _orderedProjects = _projectService.GetProjectsOrderedByRatingAsync().GetAwaiter().GetResult();
+            _orderedProjects = projects;
         }
     }
     
-    public CatalogProjectView GetProjectByIndex(int index, CatalogFilter? filter = null,
+    public async Task<CatalogProjectView> GetProjectByIndex(int index, CatalogFilter? filter = null,
         CancellationToken stoppingToken = default)
     {
         // Search from the index position
+        var projects = await GetProjectsAsync(stoppingToken);
         filter ??= new CatalogFilter();
         Predicate<Project> predicate = x
             => x.CategoryId == filter.Category
                && (filter.TagIds.Count == 0 || filter.TagIds.Contains(x.TagId));
         
-        var count = Projects.Count;
+        var count = projects.Count;
         var idxInList = index;
         if (index < 0 || index >= count)
             idxInList = Math.Clamp(index, 0, count - 1);
         
-        idxInList = Projects.FindIndex(
+        idxInList = projects.FindIndex(
             startIndex: idxInList,
             match: predicate);
         if (idxInList >= 0)
             return CreateView(idxInList);
         
         // If not found, search from the beginning
-        idxInList = Projects.FindIndex(
+        idxInList = projects.FindIndex(
             startIndex: 0,
             match: predicate);
         if (idxInList >= 0)
@@ -75,8 +68,15 @@ public class CatalogService
             return new CatalogProjectView
             {
                 CurrentIndex = idx,
-                Project = Projects[idx]
+                Project = projects[idx]
             };
         }
+    }
+    
+    private async Task<List<Project>> GetProjectsAsync(CancellationToken stoppingToken = default)
+    {
+        if (_orderedProjects is null)
+            await UpdateCatalogAsync(stoppingToken);
+        return _orderedProjects;
     }
 }
