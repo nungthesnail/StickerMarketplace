@@ -75,7 +75,9 @@ public abstract class EfBaseUnitOfWork(DbContext dbContext) : IBaseUnitOfWork
 
     public Task SaveChangesAsync(CancellationToken stoppingToken = default)
         => dbContext.SaveChangesAsync(stoppingToken);
-    
+
+    public bool IsTransactionOpened => _transaction is not null;
+
     public async ValueTask DisposeAsync()
     {
         if (_transaction is not null)

@@ -11,6 +11,8 @@ public class Transaction : IEntity<Guid>
     public decimal Amount { get; init; }
     public required string Currency { get; init; }
     public TransactionPurpose Purpose { get; init; }
+    public string? TelegramId { get; init; }
+    public string? ProviderId { get; init; }
     public string? Comment { get; set; }
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.Now;
     public DateTimeOffset? FinishedAt { get; set; }

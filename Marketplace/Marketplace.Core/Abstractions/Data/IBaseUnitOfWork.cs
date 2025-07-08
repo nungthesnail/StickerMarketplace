@@ -13,4 +13,5 @@ public interface IBaseUnitOfWork : IAsyncDisposable
     Task RollbackTransactionToSavepointAsync(string savepointName, CancellationToken stoppingToken = default);
     Task ReleaseTransactionSavepointAsync(string savepointName, CancellationToken stoppingToken = default);
     Task SaveChangesAsync(CancellationToken stoppingToken = default);
+    bool IsTransactionOpened { get; }
 }

@@ -3,10 +3,8 @@ using Marketplace.Core.Models.Enums.UserStates;
 
 namespace Marketplace.Core.Models.UserStates;
 
-public class ProjectCreationUserState : IFormUserState<ProjectCreationProgress>
+public class ProjectCreationUserState : FormUserState<ProjectCreationProgress>
 {
-    public long UserId { get; init; }
-    
     public CategoryIdentifier Category { get; set; }
     public string? ProjectName { get; set; }
     public string? ProjectDescription { get; set; }
@@ -14,7 +12,7 @@ public class ProjectCreationUserState : IFormUserState<ProjectCreationProgress>
     public string? ProjectContentUrl { get; set; }
     public ProjectTag? ProjectTag { get; set; }
     
-    public void Reset()
+    public override void Reset()
     {
         Category = default;
         ProjectName = null;
@@ -25,8 +23,8 @@ public class ProjectCreationUserState : IFormUserState<ProjectCreationProgress>
         Progress = default;
     }
 
-    public bool Completed => Progress == ProjectCreationProgress.Completed;
-    public void MoveProgressNext() => Progress = Progress.GetNext();
-    public void MoveProgressBack() => Progress = Progress.GetPrevious();
-    public ProjectCreationProgress Progress { get; private set; }
+    public override bool Completed => Progress == ProjectCreationProgress.Completed;
+    public override void MoveProgressNext() => Progress = Progress.GetNext();
+    public override void MoveProgressBack() => Progress = Progress.GetPrevious();
+    public override ProjectCreationProgress Progress { get; set; }
 }

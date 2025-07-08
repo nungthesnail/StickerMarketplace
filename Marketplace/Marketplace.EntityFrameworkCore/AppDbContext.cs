@@ -128,10 +128,19 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .HasColumnName("status")
                 .HasDefaultValue(TransactionStatus.Created)
                 .IsRequired();
+            entity
+                .Property(x => x.TelegramId)
+                .HasColumnName("telegram_id");
+            entity
+                .Property(x => x.ProviderId)
+                .HasColumnName("provider_id");
 
             entity
                 .HasIndex(x => x.UserId)
                 .HasDatabaseName("transaction_user_id_index");
+            entity
+                .HasIndex(x => x.TelegramId)
+                .HasDatabaseName("transaction_telegram_id_index");
             
             entity
                 .HasOne(x => x.User)

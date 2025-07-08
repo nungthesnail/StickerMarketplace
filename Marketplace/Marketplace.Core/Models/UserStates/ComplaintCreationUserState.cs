@@ -3,15 +3,14 @@ using Marketplace.Core.Models.Enums.UserStates;
 
 namespace Marketplace.Core.Models.UserStates;
 
-public class ComplaintCreationUserState : IFormUserState<ComplaintCreationProgress>
+public class ComplaintCreationUserState : FormUserState<ComplaintCreationProgress>
 {
-    public long UserId { get; init; }
     public long? ViolatorUserId { get; set; }
     public long? ProjectId { get; set; }
     public ComplaintTopic Topic { get; set; }
     public string? Text { get; set; }
     
-    public void Reset()
+    public override void Reset()
     {
         ViolatorUserId = default;
         ProjectId = default;
@@ -20,8 +19,8 @@ public class ComplaintCreationUserState : IFormUserState<ComplaintCreationProgre
         Progress = default;
     }
 
-    public bool Completed => Progress == ComplaintCreationProgress.Completed;
-    public void MoveProgressNext() => Progress = Progress.GetNext();
-    public void MoveProgressBack() => Progress = Progress.GetPrevious();
-    public ComplaintCreationProgress Progress { get; private set; }
+    public override bool Completed => Progress == ComplaintCreationProgress.Completed;
+    public override void MoveProgressNext() => Progress = Progress.GetNext();
+    public override void MoveProgressBack() => Progress = Progress.GetPrevious();
+    public override ComplaintCreationProgress Progress { get; set; }
 }

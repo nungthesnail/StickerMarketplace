@@ -2,13 +2,12 @@
 
 namespace Marketplace.Core.Models.UserStates;
 
-public class ViewCatalogUserState : IUserState
+public class ViewCatalogUserState : UserState
 {
-    public long UserId { get; init; }
     public required CatalogProjectView ProjectView { get; set; }
     public required CatalogFilter Filter { get; set; }
     
-    public void Reset()
+    public override void Reset()
     {
         ProjectView = new();
         Filter = new CatalogFilter();

@@ -1,8 +1,7 @@
 ﻿namespace Marketplace.Core.Models.UserStates;
 
-public class DefaultUserState : IUserState
+public class DefaultUserState : UserState
 {
-    public long UserId { get; init; }
-    public void Reset()
+    public override void Reset()
     { }
 }
