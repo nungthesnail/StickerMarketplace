@@ -12,7 +12,7 @@ namespace Marketplace.Core.Bot.Logic.Middlewares;
 
 public partial class RegistrationMiddleware(IUserStateService userStateService, IAssetProvider assetProvider,
     IBotClient botClient, IUserService userService,
-    IReferralInvitationService referalService) : AbstractMiddleware
+    IReferralInvitationService referralService) : AbstractMiddleware
 {
     public override async Task InvokeAsync(User? user, UserState? userState, Update update,
         CancellationToken stoppingToken = default)
@@ -27,8 +27,12 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
                 await ProcessUserCreationAsync((UserCreationState?)userState, update, stoppingToken);
                 return;
             }
+
             if (IsStartMessage(update))
-                await SendHelloMessageAsync(update.Message!.Chat.Id, stoppingToken);
+            {
+                await SendHelloMessageAsync(update.Message.Chat.Id, stoppingToken);
+                return;
+            }
         }
 
         await (Next?.InvokeAsync(user, userState, update, stoppingToken) ?? Task.CompletedTask);
@@ -86,8 +90,8 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
         };
         
         userStateService.SetUserState(userId, userState);
-        await SendHelloMessageAsync(userId, stoppingToken);
-        await SendSetNameMessageAsync(userId, stoppingToken);
+        await SendHelloMessageAsync(userState, stoppingToken);
+        await SendSetNameMessageAsync(userState, stoppingToken);
 
         return;
         
@@ -114,35 +118,40 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
         return value is null ? null : long.TryParse(value, out var userId) ? userId : null;
     }
 
-    private async Task SendHelloMessageAsync(long userId, CancellationToken stoppingToken = default)
+    private async Task SendHelloMessageAsync(UserState userState, CancellationToken stoppingToken)
     {
-        await botClient.SendMessageAsync(
+        userState.LastMessageId = await SendHelloMessageAsync(userState.UserId, stoppingToken);
+    }
+
+    private async Task<int> SendHelloMessageAsync(long userId, CancellationToken stoppingToken)
+    {
+        return (await botClient.SendMessageAsync(
             chatId: userId,
             text: assetProvider.GetTextReplica(AssetKeys.Text.Welcome, out var parseMode),
             parseMode: parseMode,
-            stoppingToken: stoppingToken);
+            stoppingToken: stoppingToken)).Id;
     }
 
-    private async Task SendSetNameMessageAsync(long userId, CancellationToken stoppingToken = default)
+    private async Task SendSetNameMessageAsync(UserState userState, CancellationToken stoppingToken = default)
     {
-        await botClient.SendMessageAsync(
-            chatId: userId,
+        userState.LastMessageId = (await botClient.SendMessageAsync(
+            chatId: userState.UserId,
             text: assetProvider.GetTextReplica(AssetKeys.Text.InputName, out var parseMode),
             parseMode: parseMode,
-            stoppingToken: stoppingToken);
+            stoppingToken: stoppingToken)).Id;
     }
 
     private async Task SetUserNameAsync(UserCreationState state, Update update, CancellationToken stoppingToken)
     {
         if (!ValidateUserName(update, out var userName))
         {
-            await SendInvalidUserNameMessageAsync(update.Message!.Chat.Id, stoppingToken);
+            await SendInvalidUserNameMessageAsync(state, stoppingToken);
             return;
         }
         var userNameAvailable = await IsUserNameAvailableAsync(userName, stoppingToken);
         if (!userNameAvailable)
         {
-            await SendUserNameUnavailableMessageAsync(update.Message!.Chat.Id, stoppingToken);
+            await SendUserNameUnavailableMessageAsync(state, stoppingToken);
             return;
         }
         
@@ -162,19 +171,19 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
         
         userName = update.Message.Text;
         var regex = UserNameRegex();
-        return regex.IsMatch(userName) && userName.Length <= maxNameLength && userName.Length >= minNameLength;
+        return regex.IsMatch(userName) && userName.Length is <= maxNameLength and >= minNameLength;
     }
 
-    [GeneratedRegex("^[a-zA-Z0-9_-]+$")] // Todo: check regex
+    [GeneratedRegex("^[a-zA-Z0-9_]{3,32}$")]
     private static partial Regex UserNameRegex();
 
-    private async Task SendInvalidUserNameMessageAsync(long userId, CancellationToken stoppingToken)
+    private async Task SendInvalidUserNameMessageAsync(UserState userState, CancellationToken stoppingToken)
     {
-        await botClient.SendMessageAsync(
-            chatId: userId,
+        userState.LastMessageId = (await botClient.SendMessageAsync(
+            chatId: userState.UserId,
             text: assetProvider.GetTextReplica(AssetKeys.Text.InvalidUserName, out var parseMode),
             parseMode: parseMode,
-            stoppingToken: stoppingToken);
+            stoppingToken: stoppingToken)).Id;
     }
 
     private async Task<bool> IsUserNameAvailableAsync(string userName, CancellationToken stoppingToken)
@@ -182,13 +191,13 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
         return await userService.IsNameAvailableAsync(userName, stoppingToken);
     }
     
-    private async Task SendUserNameUnavailableMessageAsync(long userId, CancellationToken stoppingToken)
+    private async Task SendUserNameUnavailableMessageAsync(UserState userState, CancellationToken stoppingToken)
     {
-        await botClient.SendMessageAsync(
-            chatId: userId,
+        userState.LastMessageId = (await botClient.SendMessageAsync(
+            chatId: userState.UserId,
             text: assetProvider.GetTextReplica(AssetKeys.Text.UserNameIsNotAvailable, out var parseMode),
             parseMode: parseMode,
-            stoppingToken: stoppingToken);
+            stoppingToken: stoppingToken)).Id;
     }
 
     private async Task CompleteUserCreationAsync(UserCreationState state, CancellationToken stoppingToken)
@@ -198,7 +207,7 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
         var userNameAvailable = await userService.IsNameAvailableAsync(state.UserName, stoppingToken);
         if (!userNameAvailable)
         {
-            await SendUserNameUnavailableMessageAsync(state.UserId, stoppingToken);
+            await SendUserNameUnavailableMessageAsync(state, stoppingToken);
             state.Reset();
             return;
         }
@@ -214,7 +223,7 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
         if (state.InvitedByUserId is not null)
         {
             var invitation = CreateReferralInvitation(state.UserId, state.InvitedByUserId.Value);
-            await referalService.CreateInvitationAsync(
+            await referralService.CreateInvitationAsync(
                 invitation: invitation,
                 openTransaction: true,
                 updateInvitations: true,
@@ -225,6 +234,9 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
         {
             // In future here will be called the promocode service
         }
+        
+        var nextState = CreateNextState(state);
+        userStateService.SetUserState(state.UserId, nextState);
     }
 
     private Subscription CreateSubscription(long userId)
@@ -253,6 +265,15 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
             InvitedUserId = userId,
             InvitingUserId = invitedByUserId,
             InvitedAt = DateTimeOffset.Now
+        };
+    }
+
+    private static DefaultUserState CreateNextState(UserCreationState state)
+    {
+        return new DefaultUserState
+        {
+            UserId = state.UserId,
+            LastMessageId = state.LastMessageId
         };
     }
 }
