@@ -3,6 +3,6 @@
 public abstract class UserState
 {
     public long UserId { get; init; }
-    public int LastMessageId { get; set; }
+    public int? LastMessageId { get; set; }
     public abstract void Reset();
 }

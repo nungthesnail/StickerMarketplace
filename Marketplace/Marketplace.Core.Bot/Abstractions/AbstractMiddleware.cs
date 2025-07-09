@@ -4,16 +4,28 @@ using Marketplace.Core.Models.UserStates;
 
 namespace Marketplace.Core.Bot.Abstractions;
 
-public abstract class AbstractMiddleware(AbstractMiddleware? next)
+public abstract class AbstractMiddleware
 {
+    private AbstractMiddleware? _next;
+    public AbstractMiddleware? Next
+    {
+        get => _next;
+        set
+        {
+            if (_next == this)
+                throw new InvalidOperationException("Can't make circular pipeline");
+            _next = value;
+        }
+    }
+
+    protected AbstractMiddleware(AbstractMiddleware? next)
+    {
+        Next = next;
+    }
+    
+    protected AbstractMiddleware()
+    { }
+    
     public abstract Task InvokeAsync(User? user, UserState? userState, Update update,
         CancellationToken stoppingToken = default);
-
-    protected async Task InvokeNextAsync(User? user, UserState? userState, Update update,
-        CancellationToken stoppingToken)
-    {
-        if (next is null)
-            return;
-        await next.InvokeAsync(user, userState, update, stoppingToken);
-    }
 }
