@@ -5,13 +5,12 @@ using Marketplace.Core.Models.UserStates;
 
 namespace Marketplace.Core.Bot.Implementations;
 
-public class ControllerFactoryBuilder : IControllerFactoryBuilder
+public class ControllerRegistryBuilder : IControllerRegistryBuilder
 {
-    private readonly Dictionary<Type, Func<IControllerCreationContext<UserState>, AbstractController>> _factories = [];
+    private readonly Dictionary<Type, Func<IControllerCreationContext<UserState>, IController>> _factories = [];
     
-    public void RegisterControllerFactoryMethod<TController, TUserState>(
-        Func<ControllerCreationContext<TUserState>, TController> factoryMethod)
-        where TController : AbstractController<TUserState>
+    public IControllerRegistryBuilder RegisterControllerFactoryMethod<TUserState>(
+        Func<ControllerCreationContext<TUserState>, IController> factoryMethod)
         where TUserState : UserState
     {
         if (!_factories.TryAdd(
@@ -24,8 +23,10 @@ public class ControllerFactoryBuilder : IControllerFactoryBuilder
         {
             throw new InvalidOperationException($"Controller for state type {typeof(TUserState)} has already been registered.");
         }
+        
+        return this;
     }
 
     public IControllerFactory Factory => new ControllerFactory(
-        new ReadOnlyDictionary<Type, Func<IControllerCreationContext<UserState>, AbstractController>>(_factories));
+        new ReadOnlyDictionary<Type, Func<IControllerCreationContext<UserState>, IController>>(_factories));
 }

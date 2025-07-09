@@ -3,7 +3,7 @@ using Marketplace.Core.Models.UserStates;
 
 namespace Marketplace.Core.Bot.Models;
 
-internal interface IControllerCreationContext<out TUserState>
+public interface IControllerCreationContext<out TUserState>
     where TUserState : UserState
 {
     User User { get; }

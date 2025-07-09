@@ -5,24 +5,22 @@ namespace Marketplace.Core.Bot.Abstractions;
 
 public interface IControllerFactory
 {
-    TController CreateControllerForUserState<TUserState, TController>(
-        ControllerCreationContext<UserState> creationContext)
+    IController CreateControllerForUserState<TUserState>(
+        IControllerCreationContext<UserState> creationContext)
         where TUserState : UserState
-        where TController : AbstractController<TUserState>
     {
         if (creationContext.UserState is not TUserState typedState)
             throw new InvalidOperationException(
-                $"Can't create controller of type {typeof(TController)} for user state {creationContext.UserState}");
+                $"Can't create controller for user state {creationContext.UserState}");
         
-        return CreateControllerForConcreteUserState<TUserState, TController>(
+        return CreateControllerForConcreteUserState(
             new ControllerCreationContext<TUserState>(
                 User: creationContext.User,
                 UserState: typedState,
                 Update: creationContext.Update));
     }
     
-    TController CreateControllerForConcreteUserState<TUserState, TController>(
-        ControllerCreationContext<TUserState> creationContext)
-        where TUserState : UserState
-        where TController : AbstractController<TUserState>;
+    IController CreateControllerForConcreteUserState<TUserState>(
+        IControllerCreationContext<TUserState> creationContext)
+        where TUserState : UserState;
 }

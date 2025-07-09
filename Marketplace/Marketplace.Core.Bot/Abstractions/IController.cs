@@ -4,13 +4,17 @@ using Marketplace.Core.Models.UserStates;
 
 namespace Marketplace.Core.Bot.Abstractions;
 
-public abstract class AbstractController;
+public interface IController
+{
+    public Task HandleUpdateAsync(CancellationToken stoppingToken = default);
+}
 
 public abstract class AbstractController<TUserState>(User user, TUserState userState, Update update)
-    : AbstractController
+    : IController
     where TUserState : UserState
 {
     protected TUserState UserState => userState;
     protected User User => user;
     protected Update Update => update;
+    public abstract Task HandleUpdateAsync(CancellationToken stoppingToken = default);
 }
