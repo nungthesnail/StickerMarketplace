@@ -11,4 +11,6 @@ public interface IUnitOfWork : IBaseUnitOfWork
     IProjectCategoryRepository ProjectCategoryRepository { get; }
     ILikeRepository LikeRepository { get; }
     IComplaintRepository ComplaintRepository { get; }
+    IPromocodeRepository PromocodeRepository { get; }
+    IPromocodeActivationRepository PromocodeActivationRepository { get; }
 }

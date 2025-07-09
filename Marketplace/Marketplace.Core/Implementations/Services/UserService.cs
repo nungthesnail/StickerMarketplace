@@ -44,7 +44,8 @@ public class UserService(IUnitOfWork uow) : IUserService
             await uow.CommitTransactionAsync(stoppingToken);
     }
     
-    public async Task<User?> GetUserByIdAsync(long userId, CancellationToken stoppingToken = default)
+    public async Task<User?> GetUserByIdAsync(long userId, bool includeSubscription = false,
+        CancellationToken stoppingToken = default)
         => await uow.UserRepository.GetByIdAsync(userId, stoppingToken);
     
     public async Task<User?> GetUserByNameAsync(string name, CancellationToken stoppingToken = default)

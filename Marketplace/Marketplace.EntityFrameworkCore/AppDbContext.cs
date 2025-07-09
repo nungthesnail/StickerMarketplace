@@ -27,6 +27,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         ConfigureProjects(modelBuilder.Entity<Project>());
         ConfigureLikes(modelBuilder.Entity<Like>());
         ConfigureComplaints(modelBuilder.Entity<Complaint>());
+        ConfigurePromocodes(modelBuilder.Entity<Promocode>());
+        ConfigurePromocodeActivations(modelBuilder.Entity<PromocodeActivation>());
 
         return;
 
@@ -485,6 +487,75 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .HasOne(x => x.Project)
                 .WithMany(x => x.Complaints)
                 .HasForeignKey(x => x.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+        
+        static void ConfigurePromocodes(EntityTypeBuilder<Promocode> entity)
+        {
+            entity
+                .ToTable("promocode")
+                .HasKey(x => x.Id);
+        
+            entity
+                .Property(x => x.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+            entity
+                .Property(x => x.Text)
+                .HasColumnName("text")
+                .HasMaxLength(128)
+                .IsRequired();
+            entity
+                .Property(x => x.ActiveUntil)
+                .HasColumnName("active_until")
+                .IsRequired();
+            entity
+                .Property(x => x.SubscriptionRenewDays)
+                .HasColumnName("subscription_renew_days")
+                .IsRequired();
+            entity
+                .Property(x => x.IsRenewEnhanced)
+                .HasColumnName("is_renew_enhanced")
+                .IsRequired();
+        
+            entity
+                .HasIndex(x => x.Text)
+                .HasDatabaseName("promocode_text_index")
+                .IsUnique();
+        }
+        
+        static void ConfigurePromocodeActivations(EntityTypeBuilder<PromocodeActivation> entity)
+        {
+            entity
+                .ToTable("promocode_activation")
+                .HasKey(x => x.Id);
+        
+            entity
+                .Property(x => x.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+            entity
+                .Property(x => x.PromocodeId)
+                .HasColumnName("promocode_id")
+                .IsRequired();
+            entity
+                .Property(x => x.UserId)
+                .HasColumnName("user_id")
+                .IsRequired();
+            entity
+                .Property(x => x.ActivatedAt)
+                .HasColumnName("activated_at")
+                .IsRequired();
+        
+            entity
+                .HasOne(x => x.User)
+                .WithMany(x => x.PromocodeActivations)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity
+                .HasOne(x => x.Promocode)
+                .WithMany(x => x.Activations)
+                .HasForeignKey(x => x.PromocodeId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

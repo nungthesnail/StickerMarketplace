@@ -30,3 +30,9 @@ public class EfLikeRepository(AppDbContext dbContext)
 
 public class EfComplaintRepository(AppDbContext dbContext)
     : AbstractEfRepository<Complaint, long>(dbContext), IComplaintRepository;
+
+public class EfPromocodeRepository(AppDbContext dbContext)
+    : AbstractEfRepository<Promocode, long>(dbContext), IPromocodeRepository;
+
+public class EfPromocodeActivationRepository(AppDbContext dbContext)
+    : AbstractEfRepository<PromocodeActivation, long>(dbContext), IPromocodeActivationRepository;

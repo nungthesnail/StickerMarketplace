@@ -98,7 +98,14 @@ public abstract class AbstractEfRepository<TEntity, TKey>(AppDbContext dbContext
 
     public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate,
         CancellationToken stoppingToken = default)
-        => await dbContext.Set<TEntity>().AnyAsync(predicate, stoppingToken);
+        => await AnyAsync(predicate, [], stoppingToken);
+
+    public Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, IEnumerable<string> joins,
+        CancellationToken stoppingToken = default)
+    {
+        var set = GetSetAndJoinProperties(joins);
+        return set.AnyAsync(predicate, stoppingToken);
+    }
 
     public async Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate,
         CancellationToken stoppingToken = default)

@@ -27,6 +27,45 @@ public interface IBotClient
         bool protectContent = false,
         string? messageEffectId = null,
         CancellationToken stoppingToken = default);
+
+    Task<Message> SendAsync(
+        long chatId,
+        string? fileId = null,
+        Stream? photoStream = null,
+        string? photoUrl = null,
+        string? text = null,
+        ParseMode parseMode = default,
+        ReplyMarkup? replyMarkup = null,
+        bool hasSpoiler = false,
+        bool protectContent = false,
+        string? messageEffectId = null,
+        CancellationToken stoppingToken = default)
+    {
+        if (photoStream is not null || photoUrl is not null || fileId is not null)
+            return SendPhotoAsync(
+                chatId,
+                fileId,
+                photoStream,
+                photoUrl,
+                text,
+                parseMode,
+                replyMarkup,
+                hasSpoiler,
+                protectContent,
+                messageEffectId,
+                stoppingToken);
+        if (text is not null)
+            return SendMessageAsync(
+                chatId,
+                text,
+                parseMode,
+                replyMarkup,
+                protectContent,
+                messageEffectId,
+                showLinkPreview: false,
+                stoppingToken);
+        throw new ArgumentNullException(nameof(text));
+    }
     
     Task AnswerCallbackQueryAsync(
         string callbackQueryId,
@@ -66,7 +105,7 @@ public interface IBotClient
         ParseMode parseMode = default,
         CancellationToken cancellationToken = default);
     
-    Task SendInvoiceAsync(
+    Task<Message> SendInvoiceAsync(
         long chatId,
         string title,
         string description,

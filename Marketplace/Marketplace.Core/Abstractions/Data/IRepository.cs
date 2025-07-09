@@ -37,5 +37,7 @@ public interface IRepository<TEntity, TKey>
     
     Task DeleteByAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken stoppingToken = default);
     Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken stoppingToken = default);
+    Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, IEnumerable<string> joins,
+        CancellationToken stoppingToken = default);
     Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken stoppingToken = default);
 }

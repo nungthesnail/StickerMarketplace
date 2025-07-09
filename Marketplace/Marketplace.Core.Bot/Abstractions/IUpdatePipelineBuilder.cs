@@ -5,5 +5,5 @@ namespace Marketplace.Core.Bot.Abstractions;
 public interface IUpdatePipelineBuilder
 {
     void AddMiddleware<TMiddleware>() where TMiddleware : AbstractMiddleware;
-    UpdatePipelineMiddleware BuildPipeline(IServiceProvider serviceProvider);
+    AbstractMiddleware BuildPipeline(IServiceProvider serviceProvider);
 }

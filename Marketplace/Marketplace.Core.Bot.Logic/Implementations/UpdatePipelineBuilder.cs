@@ -1,7 +1,7 @@
 ﻿using Marketplace.Core.Bot.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Marketplace.Core.Bot.Implementations;
+namespace Marketplace.Core.Bot.Logic.Implementations;
 
 public class UpdatePipelineBuilder : IUpdatePipelineBuilder
 {
@@ -14,7 +14,7 @@ public class UpdatePipelineBuilder : IUpdatePipelineBuilder
             throw new InvalidOperationException("Can't create circular pipeline");
     }
 
-    public UpdatePipelineMiddleware BuildPipeline(IServiceProvider serviceProvider)
+    public AbstractMiddleware BuildPipeline(IServiceProvider serviceProvider)
     {
         try
         {

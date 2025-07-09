@@ -10,6 +10,7 @@ public interface IUserService
     Task CreateUserAsync(User user, Subscription? subscription = null, bool openTransaction = true,
         CancellationToken stoppingToken = default);
 
-    Task<User?> GetUserByIdAsync(long userId, CancellationToken stoppingToken = default);
+    Task<User?> GetUserByIdAsync(long userId, bool includeSubscription = false,
+        CancellationToken stoppingToken = default);
     Task<User?> GetUserByNameAsync(string name, CancellationToken stoppingToken = default);
 }

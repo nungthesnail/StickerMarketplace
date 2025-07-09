@@ -19,5 +19,6 @@ public class User : IEntity<long>
     public List<Complaint>? IssuedComplaints { get; set; } = [];
     public List<Complaint>? AccusingComplaints { get; set; } = [];
     public List<Like>? Likes { get; set; } = [];
-    public List<ProjectTag>? ProjectTags { get; set; }
+    public List<ProjectTag>? ProjectTags { get; set; } = [];
+    public List<PromocodeActivation>? PromocodeActivations { get; set; } = [];
 }

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
+using Marketplace.Core.Abstractions.Data;
 using Marketplace.Core.Abstractions.Services;
 using Marketplace.Core.Bot.Abstractions;
 using Marketplace.Core.Bot.Logic.Abstractions;
@@ -11,7 +12,7 @@ using Marketplace.Core.Models.UserStates;
 namespace Marketplace.Core.Bot.Logic.Middlewares;
 
 public partial class RegistrationMiddleware(IUserStateService userStateService, IAssetProvider assetProvider,
-    IBotClient botClient, IUserService userService,
+    IExtendedBotClient bot, IUserService userService, IPromocodeService promocodeService,
     IReferralInvitationService referralService) : AbstractMiddleware
 {
     public override async Task InvokeAsync(User? user, UserState? userState, Update update,
@@ -20,7 +21,11 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
         if (update.Message is not null)
         {
             var message = update.Message;
-            user = await userService.GetUserByIdAsync(message.Chat.Id, stoppingToken);
+            user = await userService.GetUserByIdAsync(
+                userId: message.Chat.Id,
+                includeSubscription: true,
+                stoppingToken: stoppingToken);
+            
             userState = userStateService.GetUserState(message.Chat.Id);
             if (user is null && (userState is null || userState is UserCreationState))
             {
@@ -49,7 +54,7 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
                 await SetUserNameAsync(userState, update, stoppingToken);
                 break;
             case UserCreationProgress.Completed:
-                await CompleteUserCreationAsync(userState, stoppingToken);
+                await CompleteUserCreationAsync(userState, update, stoppingToken);
                 break;
             default:
                 userState.Reset();
@@ -125,7 +130,7 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
 
     private async Task<int> SendHelloMessageAsync(long userId, CancellationToken stoppingToken)
     {
-        return (await botClient.SendMessageAsync(
+        return (await bot.SendMessageAsync(
             chatId: userId,
             text: assetProvider.GetTextReplica(AssetKeys.Text.Welcome, out var parseMode),
             parseMode: parseMode,
@@ -134,7 +139,7 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
 
     private async Task SendSetNameMessageAsync(UserState userState, CancellationToken stoppingToken = default)
     {
-        userState.LastMessageId = (await botClient.SendMessageAsync(
+        userState.LastMessageId = (await bot.SendMessageAsync(
             chatId: userState.UserId,
             text: assetProvider.GetTextReplica(AssetKeys.Text.InputName, out var parseMode),
             parseMode: parseMode,
@@ -179,7 +184,7 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
 
     private async Task SendInvalidUserNameMessageAsync(UserState userState, CancellationToken stoppingToken)
     {
-        userState.LastMessageId = (await botClient.SendMessageAsync(
+        userState.LastMessageId = (await bot.SendMessageAsync(
             chatId: userState.UserId,
             text: assetProvider.GetTextReplica(AssetKeys.Text.InvalidUserName, out var parseMode),
             parseMode: parseMode,
@@ -193,17 +198,19 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
     
     private async Task SendUserNameUnavailableMessageAsync(UserState userState, CancellationToken stoppingToken)
     {
-        userState.LastMessageId = (await botClient.SendMessageAsync(
+        userState.LastMessageId = (await bot.SendMessageAsync(
             chatId: userState.UserId,
             text: assetProvider.GetTextReplica(AssetKeys.Text.UserNameIsNotAvailable, out var parseMode),
             parseMode: parseMode,
             stoppingToken: stoppingToken)).Id;
     }
 
-    private async Task CompleteUserCreationAsync(UserCreationState state, CancellationToken stoppingToken)
+    private async Task CompleteUserCreationAsync(UserCreationState state, Update update,
+        CancellationToken stoppingToken)
     {
         if (state.UserName is null)
             throw new InvalidOperationException("User name must be provided to create user");
+        
         var userNameAvailable = await userService.IsNameAvailableAsync(state.UserName, stoppingToken);
         if (!userNameAvailable)
         {
@@ -231,12 +238,13 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
         }
 
         if (state.PromoCode is not null)
-        {
-            // In future here will be called the promocode service
-        }
+            await ActivatePromocodeAsync(state.UserId, state.PromoCode, stoppingToken);
         
         var nextState = CreateNextState(state);
         userStateService.SetUserState(state.UserId, nextState);
+        
+        // To go to the next step
+        await (Next?.InvokeAsync(user, nextState, update, stoppingToken) ?? Task.CompletedTask);
     }
 
     private Subscription CreateSubscription(long userId)
@@ -266,6 +274,21 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
             InvitingUserId = invitedByUserId,
             InvitedAt = DateTimeOffset.Now
         };
+    }
+
+    private async Task ActivatePromocodeAsync(long userId, string text, CancellationToken stoppingToken)
+    {
+        var success = await promocodeService.TryActivatePromocodeAsync(userId, text, stoppingToken);
+        if (success)
+        {
+            var replica = assetProvider.GetTextReplica(AssetKeys.Text.PromocodeActivationSuccess, out var parseMode);
+            await bot.SendMessageAsync(userId, replica, parseMode, stoppingToken: stoppingToken);
+        }
+        else
+        {
+            var replica = assetProvider.GetTextReplica(AssetKeys.Text.PromocodeActivationFault, out var parseMode);
+            await bot.SendMessageAsync(userId, replica, parseMode, stoppingToken: stoppingToken);
+        }
     }
 
     private static DefaultUserState CreateNextState(UserCreationState state)

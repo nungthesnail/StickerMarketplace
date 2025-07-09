@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Marketplace.Core.Bot.Logic.Middlewares;
 
-public class ErrorNotifierMiddleware(ILogger<ErrorNotifierMiddleware> logger, IBotClient bot,
+public class ErrorNotifierMiddleware(ILogger<ErrorNotifierMiddleware> logger, IExtendedBotClient bot,
     IAssetProvider assetProvider) : AbstractMiddleware
 {
     public override async Task InvokeAsync(User? user, UserState? userState, Update update,

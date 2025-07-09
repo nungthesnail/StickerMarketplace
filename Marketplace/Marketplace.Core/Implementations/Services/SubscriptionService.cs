@@ -2,10 +2,11 @@
 using Marketplace.Core.Abstractions.Services;
 using Marketplace.Core.Exceptions;
 using Marketplace.Core.Models;
+using Marketplace.Core.Models.Settings;
 
 namespace Marketplace.Core.Implementations.Services;
 
-public class SubscriptionService(IUnitOfWork uow) : ISubscriptionService
+public class SubscriptionService(IUnitOfWork uow, SubscriptionSettings settings) : ISubscriptionService
 {
     public async Task<Subscription?> GetByIdAsync(long id, CancellationToken stoppingToken = default)
         => await uow.SubscriptionRepository.GetByIdAsync(id, stoppingToken);
@@ -57,4 +58,6 @@ public class SubscriptionService(IUnitOfWork uow) : ISubscriptionService
             valueSelector: _ => now + timeSpan,
             stoppingToken: stoppingToken);
     }
+
+    public SubscriptionPriceInfo[] GetPrices() => settings.PriceInfos;
 }

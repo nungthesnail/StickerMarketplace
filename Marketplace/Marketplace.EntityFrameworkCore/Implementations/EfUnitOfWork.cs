@@ -39,4 +39,12 @@ public class EfUnitOfWork(AppDbContext dbContext) : EfBaseUnitOfWork(dbContext),
     private EfComplaintRepository? _complaintRepository;
     public IComplaintRepository ComplaintRepository
         => _complaintRepository ??= new EfComplaintRepository(dbContext);
+
+    private EfPromocodeRepository? _promocodeRepository;
+    public IPromocodeRepository PromocodeRepository
+        => _promocodeRepository ??= new EfPromocodeRepository(dbContext);
+    
+    private EfPromocodeActivationRepository? _promocodeActivationRepository;
+    public IPromocodeActivationRepository PromocodeActivationRepository
+        => _promocodeActivationRepository ??= new EfPromocodeActivationRepository(dbContext);
 }
