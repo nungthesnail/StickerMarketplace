@@ -4,13 +4,13 @@ using Marketplace.Core.Bot.Models;
 namespace Marketplace.Core.Bot.Implementations;
 
 internal sealed class ControllerFactory(
-    IReadOnlyDictionary<Type, Func<IControllerCreationContext, IController>> factories)
+    IReadOnlyDictionary<Type, Func<IControllerContext, AbstractController>> factories)
     : IControllerFactory
 {
-    public IController? CreateController(IControllerCreationContext creationContext)
+    public AbstractController? CreateController(IControllerContext context)
     {
-        var type = creationContext.UserState.GetType();
+        var type = context.UserState.GetType();
         var factory = factories.GetValueOrDefault(type);
-        return factory?.Invoke(creationContext);
+        return factory?.Invoke(context);
     }
 }

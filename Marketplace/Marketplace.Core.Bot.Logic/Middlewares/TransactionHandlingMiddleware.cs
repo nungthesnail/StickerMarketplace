@@ -12,7 +12,7 @@ namespace Marketplace.Core.Bot.Logic.Middlewares;
 
 public class TransactionHandlingMiddleware(IBotClient bot, ITransactionService transactionService,
     ISubscriptionService subscriptionService, IAssetProvider assetProvider, IUserStateService userStateService,
-    ILogger<TransactionHandlingMiddleware> logger) : AbstractMiddleware
+    IControllerFactory controllerFactory, ILogger<TransactionHandlingMiddleware> logger) : AbstractMiddleware
 {
     public override async Task InvokeAsync(User? user, UserState? userState, Update update,
         CancellationToken stoppingToken = default)
@@ -24,7 +24,7 @@ public class TransactionHandlingMiddleware(IBotClient bot, ITransactionService t
         }
         if (update.Message?.SuccessfulPayment is not null)
         {
-            await ProcessSuccessfulPaymentAsync(update.Message.SuccessfulPayment, update, stoppingToken);
+            await ProcessSuccessfulPaymentAsync(user, update.Message.SuccessfulPayment, update, stoppingToken);
             return;
         }
         
@@ -36,7 +36,7 @@ public class TransactionHandlingMiddleware(IBotClient bot, ITransactionService t
         await bot.AnswerPreCheckoutQueryAsync(preCheckoutQuery.Id, stoppingToken: stoppingToken);
     }
     
-    private async Task ProcessSuccessfulPaymentAsync(SuccessfulPayment payment, Update update,
+    private async Task ProcessSuccessfulPaymentAsync(User? user, SuccessfulPayment payment, Update update,
         CancellationToken stoppingToken)
     {
         var transactionId = Guid.NewGuid();
@@ -63,7 +63,7 @@ public class TransactionHandlingMiddleware(IBotClient bot, ITransactionService t
             switch (purpose)
             {
                 case TransactionPurpose.SubscriptionRenewal:
-                    await ProcessSubscriptionRenewalAsync(payment, update, stoppingToken);
+                    await ProcessSubscriptionRenewalAsync(user, payment, update, stoppingToken);
                     break;
                 case TransactionPurpose.Unknown:
                 default:
@@ -96,7 +96,7 @@ public class TransactionHandlingMiddleware(IBotClient bot, ITransactionService t
         }
     }
 
-    private async Task ProcessSubscriptionRenewalAsync(SuccessfulPayment payment, Update update,
+    private async Task ProcessSubscriptionRenewalAsync(User? user, SuccessfulPayment payment, Update update,
         CancellationToken stoppingToken)
     {
         var userId = update.Message!.Chat.Id;
@@ -126,7 +126,26 @@ public class TransactionHandlingMiddleware(IBotClient bot, ITransactionService t
             replyMarkup: replyMarkup,
             messageEffectId: effectId,
             stoppingToken: stoppingToken);
-        
-        userStateService.SetUserState(userId, DefaultUserState.Create());
+
+        var defaultState = DefaultUserState.Create();
+        userStateService.SetUserState(userId, defaultState);
+        if (user is not null)
+            await WelcomeAsync(user, defaultState, update, stoppingToken);
+    }
+
+    private async Task WelcomeAsync(User user, DefaultUserState userState, Update update,
+        CancellationToken stoppingToken)
+    {
+        var controller = CreateWelcomeController(user, userState, update);
+        await controller.IntroduceAsync(stoppingToken);
+    }
+    
+    private AbstractController CreateWelcomeController(User user, DefaultUserState userState, Update update)
+    {
+        var ctx = new ControllerContext(user, userState, update);
+        var controller = controllerFactory.CreateController(ctx);
+        if (controller is null)
+            throw new InvalidOperationException("Cannot create welcome controller");
+        return controller;
     }
 }

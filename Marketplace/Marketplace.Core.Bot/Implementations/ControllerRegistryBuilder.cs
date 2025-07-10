@@ -7,10 +7,10 @@ namespace Marketplace.Core.Bot.Implementations;
 
 public class ControllerRegistryBuilder : IControllerRegistryBuilder
 {
-    private readonly Dictionary<Type, Func<IControllerCreationContext, IController>> _factories = [];
+    private readonly Dictionary<Type, Func<IControllerContext, AbstractController>> _factories = [];
     
     public IControllerRegistryBuilder RegisterControllerFactoryMethod<TUserState>(
-        Func<IControllerCreationContext, IController> factoryMethod)
+        Func<IControllerContext, AbstractController> factoryMethod)
         where TUserState : UserState
     {
         if (!_factories.TryAdd(typeof(TUserState), factoryMethod))
@@ -19,5 +19,5 @@ public class ControllerRegistryBuilder : IControllerRegistryBuilder
     }
 
     public IControllerFactory Factory => new ControllerFactory(
-        new ReadOnlyDictionary<Type, Func<IControllerCreationContext, IController>>(_factories));
+        new ReadOnlyDictionary<Type, Func<IControllerContext, AbstractController>>(_factories));
 }

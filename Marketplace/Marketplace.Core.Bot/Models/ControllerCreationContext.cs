@@ -3,18 +3,20 @@ using Marketplace.Core.Models.UserStates;
 
 namespace Marketplace.Core.Bot.Models;
 
-public interface IControllerCreationContext
+public interface IControllerContext
 {
     User User { get; }
     UserState UserState { get; }
     Update Update { get; }
+    public IControllerContext Copy();
+    public IControllerContext CopyWithState(UserState userState);
 }
 
-public interface IControllerCreationContext<out TUserState> : IControllerCreationContext
-    where TUserState : UserState
+public record ControllerContext(User User, UserState UserState, Update Update)
+    : IControllerContext
 {
-    TUserState TypedUserState => (TUserState)UserState;
-}
+    public IControllerContext Copy() => new ControllerContext(User, UserState, Update);
 
-public record ControllerCreationContext(User User, UserState UserState, Update Update)
-    : IControllerCreationContext;
+    public IControllerContext CopyWithState(UserState userState)
+        => this with { UserState = userState };
+}

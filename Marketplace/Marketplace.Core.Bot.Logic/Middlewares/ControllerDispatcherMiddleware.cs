@@ -12,7 +12,7 @@ public class ControllerDispatcherMiddleware(IControllerFactory controllerFactory
     {
         if (user is not null && userState is not null)
         {
-            var ctx = new ControllerCreationContext(user, userState, update);
+            var ctx = new ControllerContext(user, userState, update);
             var controller = controllerFactory.CreateController(ctx);
             if (controller is not null)
             {

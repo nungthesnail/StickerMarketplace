@@ -14,7 +14,7 @@ public class ControllerCreatingTests
     public void TestBuildControllerRegistry()
     {
         // Arrange
-        var creationContext = new ControllerCreationContext(new User
+        var creationContext = new ControllerContext(new User
             {
                 Name = string.Empty
             },
@@ -24,7 +24,7 @@ public class ControllerCreatingTests
         // Act
         var builder = new ControllerRegistryBuilder();
         builder.RegisterControllerFactoryMethod<DerivedUserState>(
-            ctx => new Mock<AbstractController<DerivedUserState>>(ctx.User, ctx.UserState, ctx.Update).Object);
+            ctx => new Mock<AbstractController<DerivedUserState>>(ctx).Object);
         var factory = builder.Factory;
         
         var controller = factory.CreateController(creationContext);
@@ -59,7 +59,7 @@ public class ControllerCreatingTests
         var factory = builder.Factory;
         // Act
         var controller = factory.CreateController(
-            new ControllerCreationContext(
+            new ControllerContext(
                 new User { Name = string.Empty },
                 new DerivedUserState(),
                 new Update()));

@@ -14,8 +14,8 @@ namespace Marketplace.Core.Bot.Logic.Middlewares;
 
 public class SubscriptionMiddleware(ILogger<SubscriptionMiddleware> logger, IExtendedBotClient bot,
     IAssetProvider assetProvider, IUserStateService userStateService, ISubscriptionService subscriptionService,
-    IPromocodeService promocodeService, IStringParser stringParser, InvoiceSettings invoiceSettings,
-    AppSettings appSettings) : AbstractMiddleware
+    IPromocodeService promocodeService, IControllerFactory controllerFactory, IStringParser stringParser,
+    InvoiceSettings invoiceSettings, AppSettings appSettings) : AbstractMiddleware
 {
     public override async Task InvokeAsync(User? user, UserState? userState, Update update,
         CancellationToken stoppingToken = default)
@@ -43,7 +43,7 @@ public class SubscriptionMiddleware(ILogger<SubscriptionMiddleware> logger, IExt
                     await SelectRenewMethodAsync(activationState, update, stoppingToken);
                     break;
                 case SubscriptionActivationProgress.PromocodeInput:
-                    await PromocodeInputtedAsync(activationState, update, stoppingToken);
+                    await PromocodeInputtedAsync(user, activationState, update, stoppingToken);
                     break;
                 case SubscriptionActivationProgress.SelectPrice:
                     await SelectPriceAsync(user, activationState, update, stoppingToken);
@@ -183,7 +183,7 @@ public class SubscriptionMiddleware(ILogger<SubscriptionMiddleware> logger, IExt
             stoppingToken: stoppingToken);
     }
 
-    private async Task PromocodeInputtedAsync(SubscriptionActivationState userState, Update update,
+    private async Task PromocodeInputtedAsync(User? user, SubscriptionActivationState userState, Update update,
         CancellationToken stoppingToken)
     {
         if (update.Message?.Text is not null)
@@ -217,7 +217,11 @@ public class SubscriptionMiddleware(ILogger<SubscriptionMiddleware> logger, IExt
                 replyMarkup: reply,
                 messageEffectId: messageEffectId,
                 stoppingToken: stoppingToken);
-            userStateService.SetUserState(userState.UserId, DefaultUserState.Create());
+
+            var defaultState = DefaultUserState.Create();
+            userStateService.SetUserState(userState.UserId, defaultState);
+            if (user is not null)
+                await WelcomeAsync(user, defaultState, update, stoppingToken);
         }
         else
         {
@@ -232,6 +236,22 @@ public class SubscriptionMiddleware(ILogger<SubscriptionMiddleware> logger, IExt
                 messageEffectId: effectId,
                 stoppingToken: stoppingToken);
         }
+    }
+
+    private async Task WelcomeAsync(User user, DefaultUserState userState, Update update,
+        CancellationToken stoppingToken)
+    {
+        var controller = CreateWelcomeController(user, userState, update);
+        await controller.IntroduceAsync(stoppingToken);
+    }
+    
+    private AbstractController CreateWelcomeController(User user, DefaultUserState userState, Update update)
+    {
+        var ctx = new ControllerContext(user, userState, update);
+        var controller = controllerFactory.CreateController(ctx);
+        if (controller is null)
+            throw new InvalidOperationException("Cannot create welcome controller");
+        return controller;
     }
     
     private async Task SendFriendInstructionsAsync(SubscriptionActivationState userState,

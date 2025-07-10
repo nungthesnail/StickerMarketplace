@@ -5,5 +5,5 @@ namespace Marketplace.Core.Bot.Abstractions;
 
 public interface IControllerFactory
 {
-    IController? CreateController(IControllerCreationContext creationContext);
+    AbstractController? CreateController(IControllerContext context);
 }

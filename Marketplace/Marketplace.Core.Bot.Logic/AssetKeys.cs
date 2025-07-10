@@ -5,7 +5,12 @@ public static class AssetKeys
     public static class Text
     {
         public const string UpdateHandlingFault = "UpdateHandlingFault";
+        
         public const string Welcome = "Welcome";
+        public const string WelcomeGoToCatalog = "WelcomeGoToCatalog";
+        public const string WelcomeCreateContent = "WelcomeCreateContent";
+        public const string WelcomeMyProfile = "WelcomeMyProfile";
+        
         public const string InputName = "InputName";
         public const string CanReceiveOnlyText = "CanReceiveOnlyText";
         
