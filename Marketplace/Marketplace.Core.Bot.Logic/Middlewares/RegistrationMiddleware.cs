@@ -8,12 +8,13 @@ using Marketplace.Core.Bot.Models;
 using Marketplace.Core.Models;
 using Marketplace.Core.Models.Enums.UserStates;
 using Marketplace.Core.Models.UserStates;
+using Microsoft.Extensions.Logging;
 
 namespace Marketplace.Core.Bot.Logic.Middlewares;
 
 public partial class RegistrationMiddleware(IUserStateService userStateService, IAssetProvider assetProvider,
     IExtendedBotClient bot, IUserService userService, IPromocodeService promocodeService,
-    IReferralInvitationService referralService) : AbstractMiddleware
+    IReferralInvitationService referralService, ILogger<RegistrationMiddleware> logger) : AbstractMiddleware
 {
     public override async Task InvokeAsync(User? user, UserState? userState, Update update,
         CancellationToken stoppingToken = default)
@@ -55,6 +56,7 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
                 break;
             case UserCreationProgress.Completed:
                 await CompleteUserCreationAsync(userState, update, stoppingToken);
+                logger.LogInformation("User created: {userId}", userState.UserId);
                 break;
             default:
                 userState.Reset();

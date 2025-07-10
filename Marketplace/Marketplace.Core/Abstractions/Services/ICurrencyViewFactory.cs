@@ -4,5 +4,5 @@ namespace Marketplace.Core.Abstractions.Services;
 
 public interface ICurrencyViewFactory
 {
-    string CreateView(TransactionMethod transactionMethod);
+    string CreateView(TransactionCurrency transactionMethod);
 }

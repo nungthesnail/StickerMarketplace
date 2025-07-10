@@ -5,12 +5,13 @@ namespace Marketplace.Core.Models.UserStates;
 
 public class SubscriptionActivationState : FormUserState<SubscriptionActivationProgress>
 {
-    public TransactionMethod? Method { get; set; }
-    public int PriceIdx { get; set; }
+    public SubscriptionRenewMethod? RenewMethod { get; set; }
+    public int? PriceIdx { get; set; }
     
     public override void Reset()
     {
-        Method = null;
+        RenewMethod = null;
+        PriceIdx = null;
         Progress = default;
     }
 
@@ -21,13 +22,13 @@ public class SubscriptionActivationState : FormUserState<SubscriptionActivationP
 
     public string MethodAsCurrency()
     {
-        if (!Method.HasValue)
+        if (!RenewMethod.HasValue)
             throw new InvalidOperationException("Payment method is not specified");
         
-        return Method switch
+        return RenewMethod switch
         {
-            TransactionMethod.TelegramStars => "XTR",
-            _ => throw new ArgumentOutOfRangeException(nameof(Method), Method, null)
+            SubscriptionRenewMethod.TelegramStars => "XTR",
+            _ => throw new ArgumentOutOfRangeException(nameof(RenewMethod), RenewMethod, null)
         };
     }
 }

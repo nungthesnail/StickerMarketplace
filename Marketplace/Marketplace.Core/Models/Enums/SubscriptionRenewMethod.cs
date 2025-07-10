@@ -1,6 +1,8 @@
 ﻿namespace Marketplace.Core.Models.Enums;
 
-public enum TransactionMethod
+public enum SubscriptionRenewMethod
 {
+    Promocode,
+    Friend,
     TelegramStars
 }

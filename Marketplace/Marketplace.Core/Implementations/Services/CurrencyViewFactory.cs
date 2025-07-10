@@ -5,11 +5,11 @@ namespace Marketplace.Core.Implementations.Services;
 
 public class CurrencyViewFactory : ICurrencyViewFactory
 {
-    public string CreateView(TransactionMethod transactionMethod)
+    public string CreateView(TransactionCurrency transactionMethod)
     {
         return transactionMethod switch
         {
-            TransactionMethod.TelegramStars => "*",
+            TransactionCurrency.Xtr => "*",
             _ => throw new ArgumentOutOfRangeException(nameof(transactionMethod), transactionMethod, null)
         };
     }

@@ -16,9 +16,15 @@ public static class AssetKeys
         public const string PromocodeActivationSuccess = "PromocodeActivationSuccess";
         
         public const string SubscriptionBuyingIntroduction = "SubscriptionBuyingIntroduction";
-        public const string SubscriptionAwaitingPaymentMethod = "SubscriptionAwaitingPaymentMethod";
+        public const string SubscriptionAwaitingRenewMethod = "SubscriptionAwaitingPaymentMethod";
+        public const string SubscriptionAwaitingPaymentPrice = "SubscriptionAwaitingPaymentPrice";
+        public const string SubscriptionSelectPrice = "SubscriptionSelectPrice";
         public const string SubscriptionInvoiceCreationFault = "SubscriptionInvoiceCreationFault";
         public const string SubscriptionAwaitingPayment = "SubscriptionAwaitingPayment";
+        public const string SubscriptionInputPromocode = "SubscriptionInputPromocode";
+        public const string SubscriptionWaitingPromocode = "WaitingPromocode";
+        public const string SubscriptionWrongPromocode = "SubscriptionWrongPromocode";
+        public const string SubscriptionCopyInvitingLink = "SubscriptionCopyInvitingLink";
     }
 
     public static class Commands
@@ -28,11 +34,20 @@ public static class AssetKeys
 
     public static class CallbackQueries
     {
-        public const string PaymentMethod = "PaymentMethod";
+        public const string SubscriptionRenewMethod = "SubscriptionRenewMethod";
+        public const string PaymentPrice = "PaymentPrice";
     }
 
     public static class Invoices
     {
         public const string Subscription = "Subscription";
+    }
+
+    public static class Keyboards
+    {
+        public const string SubscriptionForPromocode = "SubscriptionForPromocode";
+        public const string SubscriptionForFriend = "SubscriptionForFriend";
+        public const string SubscriptionForStars = "SubscriptionForStars";
+        public const string SubscriptionInviteLink = "SubscriptionInviteLink";
     }
 }

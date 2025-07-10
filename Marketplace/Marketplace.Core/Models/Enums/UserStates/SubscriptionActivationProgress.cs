@@ -3,7 +3,10 @@
 public enum SubscriptionActivationProgress
 {
     Introducing,
-    SelectPaymentMethod,
+    SelectRenewMethod,
+    SelectPrice,
+    PromocodeInput,
+    FriendInvitation,
     InvoiceCreated
 }
 
@@ -13,7 +16,7 @@ public static class SubscriptionActivationProgressExtensions
     {
         return state switch
         {
-            SubscriptionActivationProgress.SelectPaymentMethod => SubscriptionActivationProgress.InvoiceCreated,
+            SubscriptionActivationProgress.SelectRenewMethod => SubscriptionActivationProgress.InvoiceCreated,
             SubscriptionActivationProgress.InvoiceCreated => SubscriptionActivationProgress.InvoiceCreated,
             _ => throw new ArgumentOutOfRangeException(nameof(state), state, null)
         };
@@ -23,8 +26,8 @@ public static class SubscriptionActivationProgressExtensions
     {
         return state switch
         {
-            SubscriptionActivationProgress.InvoiceCreated => SubscriptionActivationProgress.SelectPaymentMethod,
-            SubscriptionActivationProgress.SelectPaymentMethod => SubscriptionActivationProgress.SelectPaymentMethod,
+            SubscriptionActivationProgress.InvoiceCreated => SubscriptionActivationProgress.SelectRenewMethod,
+            SubscriptionActivationProgress.SelectRenewMethod => SubscriptionActivationProgress.SelectRenewMethod,
             _ => throw new ArgumentOutOfRangeException(nameof(state), state, null)
         };
     }
