@@ -217,7 +217,7 @@ public class SubscriptionMiddleware(ILogger<SubscriptionMiddleware> logger, IExt
                 replyMarkup: reply,
                 messageEffectId: messageEffectId,
                 stoppingToken: stoppingToken);
-            userStateService.SetUserState(userState.UserId, new DefaultUserState());
+            userStateService.SetUserState(userState.UserId, DefaultUserState.Create());
         }
         else
         {

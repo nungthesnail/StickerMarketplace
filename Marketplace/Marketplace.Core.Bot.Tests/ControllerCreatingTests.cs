@@ -14,7 +14,7 @@ public class ControllerCreatingTests
     public void TestBuildControllerRegistry()
     {
         // Arrange
-        var creationContext = new ControllerCreationContext<DerivedUserState>(new User
+        var creationContext = new ControllerCreationContext(new User
             {
                 Name = string.Empty
             },
@@ -27,8 +27,7 @@ public class ControllerCreatingTests
             ctx => new Mock<AbstractController<DerivedUserState>>(ctx.User, ctx.UserState, ctx.Update).Object);
         var factory = builder.Factory;
         
-        var controller = factory
-            .CreateControllerForUserState<DerivedUserState>(creationContext);
+        var controller = factory.CreateController(creationContext);
         
         // Assert
         Assert.Multiple(() =>
@@ -53,19 +52,19 @@ public class ControllerCreatingTests
     }
 
     [Test]
-    public void TryCreateControllerForNotRegisteredState_ThrowsInvalidOperationException()
+    public void TryCreateControllerForNotRegisteredState_ReturnsNull()
     {
         // Arrange
         var builder = new ControllerRegistryBuilder();
         var factory = builder.Factory;
         // Act
-        TestDelegate throws = () => factory.CreateControllerForUserState<DerivedUserState>(
-            new ControllerCreationContext<DerivedUserState>(
+        var controller = factory.CreateController(
+            new ControllerCreationContext(
                 new User { Name = string.Empty },
                 new DerivedUserState(),
                 new Update()));
         // Assert
-        Assert.That(throws, Throws.InvalidOperationException);
+        Assert.That(controller, Is.Null);
     }
     
     public sealed class DerivedUserState : UserState

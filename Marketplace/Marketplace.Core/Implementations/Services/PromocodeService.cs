@@ -53,7 +53,7 @@ public class PromocodeService(IUnitOfWork uow, ISubscriptionService subscription
         CancellationToken stoppingToken = default)
     {
         var interval = TimeSpan.FromDays(days);
-        await subscriptionService.RenewSubscriptionAsync(userId, interval, enhanced, stoppingToken);
+        await subscriptionService.RenewSubscriptionByUserIdAsync(userId, interval, enhanced, stoppingToken);
     }
 
     public async Task<Promocode?> GetPromocodeAsync(string text, CancellationToken stoppingToken = default)

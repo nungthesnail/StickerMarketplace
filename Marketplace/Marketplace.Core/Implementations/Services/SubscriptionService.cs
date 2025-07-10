@@ -55,7 +55,35 @@ public class SubscriptionService(IUnitOfWork uow, SubscriptionSettings settings)
         await uow.SubscriptionRepository.UpdateByAsync(
             predicate: x => x.Id == id,
             propertySelector: propertySelector,
-            valueSelector: _ => now + timeSpan,
+            valueSelector: x
+                => x.BaseActiveUntil > now
+                    ? x.BaseActiveUntil + timeSpan
+                    : x.EnhancedUntil > now
+                        ? x.EnhancedUntil + timeSpan
+                        : now + timeSpan,
+            stoppingToken: stoppingToken);
+    }
+    
+    
+    public async Task RenewSubscriptionByUserIdAsync(long userId, TimeSpan timeSpan, bool enhanced = false,
+        CancellationToken stoppingToken = default)
+    {
+        var now = DateTimeOffset.Now;
+        Func<Subscription, DateTimeOffset?> propertySelector = x => x.BaseActiveUntil;
+        if (enhanced)
+        {
+            propertySelector = x => x.EnhancedUntil;
+        }
+        
+        await uow.SubscriptionRepository.UpdateByAsync(
+            predicate: x => x.UserId == userId,
+            propertySelector: propertySelector,
+            valueSelector: x
+                => x.BaseActiveUntil > now
+                    ? x.BaseActiveUntil + timeSpan
+                    : x.EnhancedUntil > now
+                        ? x.EnhancedUntil + timeSpan
+                        : now + timeSpan,
             stoppingToken: stoppingToken);
     }
 

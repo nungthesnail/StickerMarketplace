@@ -11,5 +11,7 @@ public interface ISubscriptionService
     Task UpdateCachedActivationAsync(CancellationToken stoppingToken = default);
     Task RenewSubscriptionAsync(long id, TimeSpan timeSpan, bool enhanced = false,
         CancellationToken stoppingToken = default);
+    Task RenewSubscriptionByUserIdAsync(long userId, TimeSpan timeSpan, bool enhanced = false,
+        CancellationToken stoppingToken = default);
     SubscriptionPriceInfo[] GetPrices();
 }

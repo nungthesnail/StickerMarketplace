@@ -6,7 +6,7 @@ namespace Marketplace.Core.Bot.Abstractions;
 public interface IControllerRegistryBuilder
 {
     IControllerRegistryBuilder RegisterControllerFactoryMethod<TUserState>(
-        Func<ControllerCreationContext<TUserState>, IController> factoryMethod)
+        Func<IControllerCreationContext, IController> factoryMethod)
         where TUserState : UserState;
     
     IControllerFactory Factory { get; }

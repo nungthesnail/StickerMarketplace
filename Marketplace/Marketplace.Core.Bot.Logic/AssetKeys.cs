@@ -19,12 +19,13 @@ public static class AssetKeys
         public const string SubscriptionAwaitingRenewMethod = "SubscriptionAwaitingPaymentMethod";
         public const string SubscriptionAwaitingPaymentPrice = "SubscriptionAwaitingPaymentPrice";
         public const string SubscriptionSelectPrice = "SubscriptionSelectPrice";
-        public const string SubscriptionInvoiceCreationFault = "SubscriptionInvoiceCreationFault";
-        public const string SubscriptionAwaitingPayment = "SubscriptionAwaitingPayment";
         public const string SubscriptionInputPromocode = "SubscriptionInputPromocode";
         public const string SubscriptionWaitingPromocode = "WaitingPromocode";
         public const string SubscriptionWrongPromocode = "SubscriptionWrongPromocode";
         public const string SubscriptionCopyInvitingLink = "SubscriptionCopyInvitingLink";
+        public const string SubscriptionRenewed = "SubscriptionRenewed";
+        
+        public const string TransactionProcessingFailed = "TransactionProcessingFailed";
     }
 
     public static class Commands
