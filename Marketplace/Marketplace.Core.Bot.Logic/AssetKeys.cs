@@ -31,6 +31,13 @@ public static class AssetKeys
         public const string SubscriptionRenewed = "SubscriptionRenewed";
         
         public const string TransactionProcessingFailed = "TransactionProcessingFailed";
+        
+        public const string CatalogFilterSelectCategory = "CatalogFilterTags";
+        public const string CatalogFilterAwaitingCategory = "CatalogFilterAwaitingCategory";
+        public const string CatalogFilterSelectTags = "CatalogFilterTags";
+        public const string CatalogFilterAwaitingTags = "CatalogFilterAwaitingTags";
+        
+        public const string CallbackQueryParseError = "CallbackQueryParseError";
     }
 
     public static class Commands
@@ -54,6 +61,7 @@ public static class AssetKeys
         public const string SubscriptionForPromocode = "SubscriptionForPromocode";
         public const string SubscriptionForFriend = "SubscriptionForFriend";
         public const string SubscriptionForStars = "SubscriptionForStars";
-        public const string SubscriptionInviteLink = "SubscriptionInviteLink";
+        
+        public const string CatalogFilterTagsSelected = "CatalogFilterTagsSelected";
     }
 }

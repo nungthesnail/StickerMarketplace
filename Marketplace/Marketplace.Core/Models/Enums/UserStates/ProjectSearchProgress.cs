@@ -2,6 +2,7 @@
 
 public enum ProjectSearchProgress
 {
+    Introduce,
     SelectCategory,
     SelectTags,
     Completed

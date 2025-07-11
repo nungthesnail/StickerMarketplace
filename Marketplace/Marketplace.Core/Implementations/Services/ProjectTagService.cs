@@ -24,6 +24,6 @@ public class ProjectTagService(IUnitOfWork uow) : IProjectTagService
         await uow.CommitTransactionAsync(stoppingToken);
     }
 
-    public async Task GetTagsAsync(CancellationToken stoppingToken)
+    public async Task<IEnumerable<ProjectTag>> GetTagsAsync(CancellationToken stoppingToken)
         => await uow.ProjectTagRepository.GetAllAsync(stoppingToken);
 }

@@ -83,6 +83,12 @@ public interface IBotClient
         ReplyMarkup? replyMarkup = null,
         bool showLinkPreview = false,
         CancellationToken cancellationToken = default);
+
+    Task<Message> EditReplyMarkupAsync(
+        long chatId,
+        int messageId,
+        ReplyMarkup replyMarkup,
+        CancellationToken stoppingToken = default);
     
     Task DeleteMessageAsync(
         long chatId,
