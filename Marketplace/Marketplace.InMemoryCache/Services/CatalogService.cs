@@ -28,7 +28,7 @@ public class CatalogService : ICatalogService
         }
     }
     
-    public async Task<CatalogProjectView> GetProjectByIndex(int index, CatalogFilter? filter = null,
+    public async Task<CatalogProjectView> GetProjectByIndexAsync(int index, CatalogFilter? filter = null,
         CancellationToken stoppingToken = default)
     {
         // Search from the index position

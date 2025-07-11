@@ -12,7 +12,6 @@ public static class AssetKeys
         public const string WelcomeMyProfile = "WelcomeMyProfile";
         
         public const string InputName = "InputName";
-        public const string CanReceiveOnlyText = "CanReceiveOnlyText";
         
         public const string InvalidUserName = "InvalidUserName";
         public const string UserNameIsNotAvailable = "UserNameIsNotAvailable";
@@ -35,7 +34,9 @@ public static class AssetKeys
         public const string CatalogFilterSelectCategory = "CatalogFilterTags";
         public const string CatalogFilterAwaitingCategory = "CatalogFilterAwaitingCategory";
         public const string CatalogFilterSelectTags = "CatalogFilterTags";
-        public const string CatalogFilterAwaitingTags = "CatalogFilterAwaitingTags";
+        
+        public const string CatalogNoProjectsFound = "CatalogNoProjectsFound";
+        public const string CatalogProjectView = "CatalogProjectView";
         
         public const string CallbackQueryParseError = "CallbackQueryParseError";
     }
@@ -63,5 +64,12 @@ public static class AssetKeys
         public const string SubscriptionForStars = "SubscriptionForStars";
         
         public const string CatalogFilterTagsSelected = "CatalogFilterTagsSelected";
+        
+        public const string CatalogMoveNext = "CatalogMoveNext";
+        public const string CatalogMovePrev = "CatalogMovePrev";
+        public const string CatalogLike = "CatalogLike";
+        public const string CatalogDislike = "CatalogDislike";
+        public const string CatalogComplaint = "CatalogComplaint";
+        public const string CatalogDownload = "CatalogDownload";
     }
 }
