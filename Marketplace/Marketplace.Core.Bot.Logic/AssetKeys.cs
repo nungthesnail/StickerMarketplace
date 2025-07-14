@@ -51,6 +51,13 @@ public static class AssetKeys
         public const string CreationProjectAlreadyExists = "CreationProjectAlreadyExists";
         public const string CreationCompleted = "CreationCompleted";
         
+        public const string EditUserName = "EditUserName";
+        public const string EditUserNameIsTooLong = "EditUserNameIsTooLong";
+        
+        public const string ProfileInfo = "ProfileInfo";
+        public const string ProfileSubscriptionLevelBase = "ProfileSubscriptionLevel";
+        public const string ProfileSubscriptionLevelEnhanced = "ProfileSubscriptionLevel";
+        
         public const string CallbackQueryParseError = "CallbackQueryParseError";
     }
 

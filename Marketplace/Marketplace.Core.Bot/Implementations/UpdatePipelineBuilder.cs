@@ -1,7 +1,7 @@
 ﻿using Marketplace.Core.Bot.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Marketplace.Core.Bot.Logic.Implementations;
+namespace Marketplace.Core.Bot.Implementations;
 
 public class UpdatePipelineBuilder : IUpdatePipelineBuilder
 {

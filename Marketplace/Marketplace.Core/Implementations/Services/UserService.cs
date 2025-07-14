@@ -50,4 +50,17 @@ public class UserService(IUnitOfWork uow) : IUserService
     
     public async Task<User?> GetUserByNameAsync(string name, CancellationToken stoppingToken = default)
         => (await uow.UserRepository.GetByAsync(x => x.Name == name, stoppingToken: stoppingToken)).FirstOrDefault();
+
+    public async Task<bool> ChangeUserNameAsync(long userId, string newName, CancellationToken stoppingToken = default)
+    {
+        if (!await IsNameAvailableAsync(newName, stoppingToken))
+            return false;
+        
+        await uow.UserRepository.UpdateByAsync(
+            predicate: x => x.Id == userId,
+            propertySelector: x => x.Name,
+            valueSelector: _ => newName,
+            stoppingToken: stoppingToken);
+        return true;
+    }
 }

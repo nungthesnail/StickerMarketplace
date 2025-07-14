@@ -5,7 +5,7 @@ using Marketplace.Core.Models;
 using Marketplace.Core.Models.UserStates;
 using Microsoft.Extensions.Logging;
 
-namespace Marketplace.Core.Bot.Logic.Implementations;
+namespace Marketplace.Core.Bot.Implementations;
 
 public class UpdatePipelineMiddleware(AbstractMiddleware? next, IUnitOfWork uow,
     ILogger<UpdatePipelineMiddleware> logger) : AbstractMiddleware(next)

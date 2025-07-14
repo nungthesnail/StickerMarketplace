@@ -13,4 +13,5 @@ public interface IUserService
     Task<User?> GetUserByIdAsync(long userId, bool includeSubscription = false,
         CancellationToken stoppingToken = default);
     Task<User?> GetUserByNameAsync(string name, CancellationToken stoppingToken = default);
+    Task<bool> ChangeUserNameAsync(long userId, string newName, CancellationToken stoppingToken = default);
 }
