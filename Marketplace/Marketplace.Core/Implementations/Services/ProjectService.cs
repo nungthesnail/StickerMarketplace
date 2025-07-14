@@ -71,4 +71,9 @@ public class ProjectService(IUnitOfWork uow) : IProjectService
             propertySelector: x => x.Visible,
             valueSelector: _ => false,
             stoppingToken: stoppingToken);
+
+    public async Task DeleteProjectAsync(long projectId, CancellationToken stoppingToken = default)
+        => await uow.ProjectRepository.DeleteByAsync(
+            predicate: x => x.Id == projectId,
+            stoppingToken: stoppingToken);
 }

@@ -95,6 +95,11 @@ public abstract class AbstractController<TUserState> : AbstractController
     protected AbstractController(IControllerContext ctx, IControllerFactory controllerFactory,
         IUserStateService userStateService) : base(ctx, controllerFactory, userStateService)
     { }
+
+    protected AbstractController(IControllerContext ctx, IControllerFactory controllerFactory,
+        IUserStateService userStateService, IServiceProvider services)
+        : base(ctx, controllerFactory, userStateService, services)
+    { }
     
     private TUserState? _userState;
     protected TUserState UserState => _userState ??= (TUserState)BaseUserState;

@@ -19,4 +19,5 @@ public interface IProjectService
         CancellationToken stoppingToken = default);
 
     Task DisableProjectAsync(long projectId, CancellationToken stoppingToken = default);
+    Task DeleteProjectAsync(long projectId, CancellationToken stoppingToken = default);
 }

@@ -55,8 +55,11 @@ public static class AssetKeys
         public const string EditUserNameIsTooLong = "EditUserNameIsTooLong";
         
         public const string ProfileInfo = "ProfileInfo";
-        public const string ProfileSubscriptionLevelBase = "ProfileSubscriptionLevel";
-        public const string ProfileSubscriptionLevelEnhanced = "ProfileSubscriptionLevel";
+        
+        public const string ProjectManagementSelectAction = "ProjectManagementSelectAction";
+        public const string ProjectManagementSelectProject = "ProjectManagementSelectProject";
+        public const string ProjectManagementStat = "ProjectManagementStat";
+        public const string ProjectManagementDeleted = "ProjectManagementDeleted";
         
         public const string CallbackQueryParseError = "CallbackQueryParseError";
     }
@@ -91,5 +94,8 @@ public static class AssetKeys
         public const string CatalogDislike = "CatalogDislike";
         public const string CatalogComplaint = "CatalogComplaint";
         public const string CatalogDownload = "CatalogDownload";
+        
+        public const string ProjectViewStatistics = "ProjectViewStatistics";
+        public const string ProjectDelete = "ProjectDelete";
     }
 }

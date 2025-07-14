@@ -9,8 +9,8 @@ namespace Marketplace.Core.Bot.Logic.Controllers;
 
 public class ProfileController(
     IControllerContext ctx, IControllerFactory controllerFactory, IUserStateService userStateService,
-    IExtendedBotClient bot, IAssetProvider assetProvider, IUserService userService)
-    : AbstractController<MyProfileUserState>(ctx, controllerFactory, userStateService)
+    IExtendedBotClient bot, IAssetProvider assetProvider, IServiceProvider serviceProvider)
+    : AbstractController<MyProfileUserState>(ctx, controllerFactory, userStateService, serviceProvider)
 {
     public override async Task HandleUpdateAsync(CancellationToken stoppingToken = default)
     {
