@@ -12,7 +12,7 @@ namespace Marketplace.Core.Bot.Logic.Controllers;
 public class CatalogFilterController(
     IControllerContext ctx, IControllerFactory controllerFactory, IUserStateService userStateService,
     IExtendedBotClient bot, IAssetProvider assetProvider, IProjectCategoryService projectCategoryService,
-    IProjectTagService projectTagService)
+    IProjectTagService projectTagService, IKeyboardFactory keyboardFactory)
     : AbstractController<ProjectSearchUserState>(ctx, controllerFactory, userStateService)
 {
     private const string AllTagsSelectedCallback = "allTagsSelected";
@@ -54,21 +54,8 @@ public class CatalogFilterController(
             stoppingToken: stoppingToken);
     }
 
-    private static ReplyMarkup CreateCategoriesKeyboard(IEnumerable<ProjectCategory> categories)
-    {
-        return new InlineKeyboardMarkup
-        {
-            InlineKeyboard = categories.Select(x =>
-                new List<InlineKeyboardButton>
-                    {
-                        new()
-                        {
-                            Text = x.Name,
-                            CallbackData = x.Id.ToString()
-                        }
-                    })
-        };
-    }
+    private ReplyMarkup CreateCategoriesKeyboard(IEnumerable<ProjectCategory> categories)
+        => keyboardFactory.CreateCategoriesKeyboard(categories);
 
     private async Task SelectCategoryAsync(CancellationToken stoppingToken)
     {
@@ -119,7 +106,7 @@ public class CatalogFilterController(
 
     private async Task SendSelectTagsMessageAsync(IEnumerable<ProjectTag> tags, CancellationToken stoppingToken)
     {
-        var replyMarkup = CreateTagsKeyboard(tags.ToList());
+        var replyMarkup = CreateTagsKeyboard(tags.ToList(), UserState.Filter.TagIds);
         var replica = assetProvider.GetTextReplica(AssetKeys.Text.CatalogFilterSelectTags,
             out var parseMode, out var imageUrl, out _, out var effectId);
         await bot.SendAsync(
@@ -132,36 +119,9 @@ public class CatalogFilterController(
             stoppingToken: stoppingToken);
     }
 
-    private ReplyMarkup CreateTagsKeyboard(List<ProjectTag> tags)
-    {
-        const char selectedIcon = '\u2705';
-        
-        var selected = UserState.Filter.TagIds;
-        var keyboard = new List<List<InlineKeyboardButton>>();
-        for (var i = 0; i < tags.Count; i += tags.Count - i == 2 ? 1 : 2)
-        {
-            var row = tags.Skip(i).Take(2);
-            var buttons = row.Select(x => new InlineKeyboardButton
-            {
-                Text = selected.Contains(x.Id) ? $"{selectedIcon} {x.Name}" : x.Name,
-                CallbackData = x.Id.ToString()
-            }).ToList();
-            keyboard.Add(buttons);
-        }
-
-        keyboard.Add([
-            new InlineKeyboardButton
-            {
-                Text = assetProvider.GetTextReplica(AssetKeys.Keyboards.CatalogFilterTagsSelected),
-                CallbackData = AllTagsSelectedCallback
-            }
-        ]);
-
-        return new InlineKeyboardMarkup
-        {
-            InlineKeyboard = keyboard
-        };
-    }
+    private ReplyMarkup CreateTagsKeyboard(List<ProjectTag> tags, List<long>? selected = null,
+        bool createNextButton = false, string? callback = null)
+        => keyboardFactory.CreateTagsKeyboard(tags, selected, createNextButton, callback);
 
     private async Task SelectTagsAsync(CancellationToken stoppingToken)
     {
@@ -189,7 +149,7 @@ public class CatalogFilterController(
 
     private async Task EditSelectTagsMarkupAsync(IEnumerable<ProjectTag> tags, CancellationToken stoppingToken)
     {
-        var replyMarkup = CreateTagsKeyboard(tags.ToList());
+        var replyMarkup = CreateTagsKeyboard(tags.ToList(), UserState.Filter.TagIds);
         await bot.EditReplyMarkupAsync(
             chatId: UserState.UserId,
             messageId: UserState.LastMessageId!.Value,

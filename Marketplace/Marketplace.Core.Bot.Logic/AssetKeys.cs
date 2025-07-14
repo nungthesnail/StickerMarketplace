@@ -38,6 +38,19 @@ public static class AssetKeys
         public const string CatalogNoProjectsFound = "CatalogNoProjectsFound";
         public const string CatalogProjectView = "CatalogProjectView";
         
+        public const string CreationSetCategory = "CreationSetCategory";
+        public const string CreationSetName = "CreationSetName";
+        public const string CreationNameIsTooLong = "CreationNameIsTooLong";
+        public const string CreationNameIsNotAvailable = "CreationNameIsNotAvailable";
+        public const string CreationSetDescription = "CreationSetDescription";
+        public const string CreationDescriptionIsTooLong = "CreationDescriptionIsTooLong";
+        public const string CreationUploadImage = "CreationUploadImage";
+        public const string CreationSetContentUrl = "CreationSetContentUrl";
+        public const string CreationSelectTag = "CreationSelectTag";
+        public const string CreationInvalidUrl = "CreationInvalidUrl";
+        public const string CreationProjectAlreadyExists = "CreationProjectAlreadyExists";
+        public const string CreationCompleted = "CreationCompleted";
+        
         public const string CallbackQueryParseError = "CallbackQueryParseError";
     }
 
@@ -63,7 +76,7 @@ public static class AssetKeys
         public const string SubscriptionForFriend = "SubscriptionForFriend";
         public const string SubscriptionForStars = "SubscriptionForStars";
         
-        public const string CatalogFilterTagsSelected = "CatalogFilterTagsSelected";
+        public const string CatalogFilterTagsAreSelected = "CatalogFilterTagsAreSelected";
         
         public const string CatalogMoveNext = "CatalogMoveNext";
         public const string CatalogMovePrev = "CatalogMovePrev";

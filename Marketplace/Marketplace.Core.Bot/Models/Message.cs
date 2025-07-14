@@ -12,6 +12,7 @@ public class Message
     public string? EffectId { get; set; }
     public string? Caption { get; set; }
     public bool HasMediaSpoiler { get; set; }
+    public PhotoSize? Photo { get; set; }
     public SuccessfulPayment? SuccessfulPayment { get; set; }
     public InlineKeyboardMarkup? ReplyMarkup { get; set; }
 }

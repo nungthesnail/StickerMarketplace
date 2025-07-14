@@ -8,18 +8,18 @@ public class ProjectCreationUserState : FormUserState<ProjectCreationProgress>
     public CategoryIdentifier Category { get; set; }
     public string? ProjectName { get; set; }
     public string? ProjectDescription { get; set; }
-    public long ProjectImageId { get; set; }
+    public string? ProjectImageId { get; set; }
     public string? ProjectContentUrl { get; set; }
-    public ProjectTag? ProjectTag { get; set; }
+    public long? ProjectTagId { get; set; }
     
     public override void Reset()
     {
         Category = default;
         ProjectName = null;
         ProjectDescription = null;
-        ProjectImageId = default;
+        ProjectImageId = null;
         ProjectContentUrl = null;
-        ProjectTag = null;
+        ProjectTagId = default;
         Progress = default;
     }
 

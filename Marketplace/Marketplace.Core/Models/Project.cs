@@ -10,7 +10,7 @@ public class Project : IEntity<long>
     public User? User { get; set; }
     public required string Name { get; set; }
     public string? Description { get; set; }
-    public long? ImageId { get; set; }
+    public string? ImageId { get; set; }
     public string? ContentUrl { get; set; }
     public bool Moderated { get; set; }
     public bool Visible { get; set; } = true;
