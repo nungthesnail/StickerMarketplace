@@ -1,5 +1,4 @@
 ﻿using Marketplace.Core.Abstractions.Services;
-using Marketplace.Bot.Abstractions;
 using Marketplace.Bot.Models;
 using Marketplace.Core.Bot.Abstractions;
 using Marketplace.Core.Bot.Logic.Abstractions;
@@ -45,15 +44,17 @@ public class CatalogController(
 
     private async Task MoveCatalogNextAsync(CancellationToken stoppingToken)
     {
+        const int nextCatalogDir = 1;
         UserState.ProjectView.CurrentIndex++;
-        await UpdateProjectAsync(stoppingToken);
+        await UpdateProjectAsync(nextCatalogDir, stoppingToken);
         await ShowProjectAsync(stoppingToken);
     }
 
     private async Task ShowProjectAsync(CancellationToken stoppingToken)
     {
+        const int nextCatalogDir = 1;
         if (UserState.ProjectView.Project is null)
-            await UpdateProjectAsync(stoppingToken);
+            await UpdateProjectAsync(nextCatalogDir, stoppingToken);
         if (UserState.ProjectView.Project is null)
         {
             await SendNoProjectsMessageAsync(stoppingToken);
@@ -78,10 +79,10 @@ public class CatalogController(
             stoppingToken: stoppingToken);
     }
 
-    private async Task UpdateProjectAsync(CancellationToken stoppingToken)
+    private async Task UpdateProjectAsync(int direction, CancellationToken stoppingToken)
     {
         var projectView = await catalogService.GetProjectByIndexAsync(
-            UserState.ProjectView.CurrentIndex, UserState.Filter, stoppingToken);
+            UserState.ProjectView.CurrentIndex, direction, UserState.Filter, stoppingToken);
         UserState.ProjectView = projectView;
     }
 
@@ -163,8 +164,9 @@ public class CatalogController(
     
     private async Task MoveCatalogPrevAsync(CancellationToken stoppingToken)
     {
-        UserState.ProjectView.CurrentIndex++;
-        await UpdateProjectAsync(stoppingToken);
+        const int prevCatalogDir = -1;
+        UserState.ProjectView.CurrentIndex--;
+        await UpdateProjectAsync(prevCatalogDir, stoppingToken);
         await ShowProjectAsync(stoppingToken);
     }
 

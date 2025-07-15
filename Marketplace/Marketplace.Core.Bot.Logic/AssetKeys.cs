@@ -67,6 +67,7 @@ public static class AssetKeys
     public static class Commands
     {
         public const string Start = "/start";
+        public const string CatalogFilterNotModerated = "/filterNotModerated";
     }
 
     public static class CallbackQueries

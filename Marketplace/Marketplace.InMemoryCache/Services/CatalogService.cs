@@ -28,32 +28,43 @@ public class CatalogService : ICatalogService
         }
     }
     
-    public async Task<CatalogProjectView> GetProjectByIndexAsync(int index, CatalogFilter? filter = null,
+    public async Task<CatalogProjectView> GetProjectByIndexAsync(int index, int direction, CatalogFilter? filter = null,
         CancellationToken stoppingToken = default)
     {
+        ArgumentOutOfRangeException.ThrowIfZero(direction); // The iteration should move, not stand
+        
         // Search from the index position
         var projects = await GetProjectsAsync(stoppingToken);
         filter ??= new CatalogFilter();
         Predicate<Project> predicate = x
-            => x.CategoryId == filter.Category
-               && (filter.TagIds.Count == 0 || filter.TagIds.Contains(x.TagId));
+            => x.CategoryId == filter.Category // Match category
+               && (filter.TagIds.Count == 0 || filter.TagIds.Contains(x.TagId)) // Match tags
+               && ((!x.Moderated && filter.NotModerated) || !filter.NotModerated); // Match moderation
         
         var count = projects.Count;
         var idxInList = index;
         if (index < 0 || index >= count)
             idxInList = Math.Clamp(index, 0, count - 1);
-        
-        idxInList = projects.FindIndex(
-            startIndex: idxInList,
-            match: predicate);
-        if (idxInList >= 0)
+
+        for (var i = idxInList; i < count && i >= 0; i += Math.Abs(direction))
+        {
+            if (!predicate.Invoke(projects[i]))
+                continue;
+            idxInList = i;
+            break;
+        }
+        if (idxInList >= 0 && idxInList < count)
             return CreateView(idxInList);
         
-        // If not found, search from the beginning
-        idxInList = projects.FindIndex(
-            startIndex: 0,
-            match: predicate);
-        if (idxInList >= 0)
+        // If not found, search from the beginning or end depending on the direction of search.
+        for (var i = direction < 0 ? idxInList : 0; i < count && i >= 0; i += Math.Abs(direction))
+        {
+            if (!predicate.Invoke(projects[i]))
+                continue;
+            idxInList = i;
+            break;
+        }
+        if (idxInList >= 0 && idxInList < count)
             return CreateView(idxInList);
 
         // If no project found

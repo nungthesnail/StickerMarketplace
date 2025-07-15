@@ -1,5 +1,4 @@
 ﻿using Marketplace.Core.Abstractions.Services;
-using Marketplace.Bot.Abstractions;
 using Marketplace.Bot.Models;
 using Marketplace.Core.Bot.Abstractions;
 using Marketplace.Core.Bot.Logic.Abstractions;
@@ -127,6 +126,12 @@ public class CatalogFilterController(
 
     private async Task SelectTagsAsync(CancellationToken stoppingToken)
     {
+        const string commandNotModerated = AssetKeys.Commands.CatalogFilterNotModerated;
+        if (Update.Message?.Text == commandNotModerated && User.IsAdmin)
+        {
+            UserState.Filter.NotModerated = true;
+            return;
+        }
         if (Update.CallbackQuery is null)
         {
             await SendAwaitingCategoryMessageAsync(stoppingToken);
