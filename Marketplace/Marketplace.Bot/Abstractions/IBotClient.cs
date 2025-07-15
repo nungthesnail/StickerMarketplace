@@ -76,13 +76,11 @@ public interface IBotClient
         int? cacheTime = 0,
         CancellationToken stoppingToken = default);
     
-    Task<Message> EditMessageTextAsync(
-        long chatId,
+    Task<Message> EditMessageTextAsync(long chatId,
         int messageId,
         string text,
         ParseMode parseMode = default,
         Models_ReplyMarkup? replyMarkup = null,
-        bool showLinkPreview = false,
         CancellationToken cancellationToken = default);
 
     Task<Message> EditReplyMarkupAsync(
@@ -132,7 +130,7 @@ public interface IBotClient
         string? errorMessage = null,
         CancellationToken stoppingToken = default);
     
-    Task GetMyStarBalanceAsync(out int amount, out int? nanoAmount, CancellationToken stoppingToken = default);
+    Task<(int Amount, int? NanoAmount)> GetMyStarBalanceAsync(CancellationToken stoppingToken = default);
     
     Task RefundStarPaymentAsync(
         long userId,

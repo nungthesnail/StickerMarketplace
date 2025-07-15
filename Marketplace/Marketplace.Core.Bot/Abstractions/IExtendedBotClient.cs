@@ -6,7 +6,7 @@ namespace Marketplace.Core.Bot.Abstractions;
 
 public interface IExtendedBotClient : IBotClient
 {
-    Task<Message> SendMessageAsync(
+    Task<Message> SendMessageAndDeleteLastAsync(
         UserState userState,
         string text,
         ParseMode parseMode = default,
@@ -16,7 +16,7 @@ public interface IExtendedBotClient : IBotClient
         bool showLinkPreview = false,
         CancellationToken stoppingToken = default);
     
-    Task<Message> SendPhotoAsync(
+    Task<Message> SendPhotoAndDeleteLastAsync(
         UserState userState,
         string? fileId = null,
         Stream? photoStream = null,
