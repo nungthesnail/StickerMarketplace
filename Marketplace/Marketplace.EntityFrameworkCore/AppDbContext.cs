@@ -210,6 +210,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .Property(x => x.InvitedAt)
                 .HasColumnName("invited_at")
                 .IsRequired();
+            entity
+                .Property(x => x.SubscriptionRenewed)
+                .HasColumnName("subscription_renewed")
+                .HasDefaultValue(false)
+                .IsRequired();
 
             entity
                 .HasIndex(x => x.InvitingUserId)
@@ -458,6 +463,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity
                 .Property(x => x.CreatedAt)
                 .HasColumnName("created_at")
+                .IsRequired();
+            entity
+                .Property(x => x.Reviewed)
+                .HasColumnName("reviewed")
+                .HasDefaultValue(false)
                 .IsRequired();
             entity
                 .Property(x => x.ReviewedAt)
