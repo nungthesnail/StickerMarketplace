@@ -1,7 +1,8 @@
-﻿using Marketplace.Core.Bot.Models;
-using ReplyMarkup = Marketplace.Core.Bot.Models.ReplyMarkup;
+﻿using Marketplace.Bot.Models;
+using Models_ReplyMarkup = Marketplace.Bot.Models.ReplyMarkup;
+using ReplyMarkup = Marketplace.Bot.Models.ReplyMarkup;
 
-namespace Marketplace.Core.Bot.Abstractions;
+namespace Marketplace.Bot.Abstractions;
 
 public interface IBotClient
 {
@@ -9,7 +10,7 @@ public interface IBotClient
         long chatId,
         string text,
         ParseMode parseMode = default,
-        ReplyMarkup? replyMarkup = null,
+        Models_ReplyMarkup? replyMarkup = null,
         bool protectContent = false,
         string? messageEffectId = null,
         bool showLinkPreview = false,
@@ -22,7 +23,7 @@ public interface IBotClient
         string? photoUrl = null,
         string? caption = null,
         ParseMode parseMode = default,
-        ReplyMarkup? replyMarkup = null,
+        Models_ReplyMarkup? replyMarkup = null,
         bool hasSpoiler = false,
         bool protectContent = false,
         string? messageEffectId = null,
@@ -35,7 +36,7 @@ public interface IBotClient
         string? photoUrl = null,
         string? text = null,
         ParseMode parseMode = default,
-        ReplyMarkup? replyMarkup = null,
+        Models_ReplyMarkup? replyMarkup = null,
         bool hasSpoiler = false,
         bool protectContent = false,
         string? messageEffectId = null,
@@ -80,14 +81,14 @@ public interface IBotClient
         int messageId,
         string text,
         ParseMode parseMode = default,
-        ReplyMarkup? replyMarkup = null,
+        Models_ReplyMarkup? replyMarkup = null,
         bool showLinkPreview = false,
         CancellationToken cancellationToken = default);
 
     Task<Message> EditReplyMarkupAsync(
         long chatId,
         int messageId,
-        ReplyMarkup replyMarkup,
+        Models_ReplyMarkup replyMarkup,
         CancellationToken stoppingToken = default);
     
     Task DeleteMessageAsync(
@@ -121,7 +122,7 @@ public interface IBotClient
         string? providerToken = null,
         string? providerData = null,
         string? photoUrl = null,
-        ReplyMarkup? replyMarkup = null,
+        Models_ReplyMarkup? replyMarkup = null,
         bool protectContent = false,
         string? messageEffectId = null,
         CancellationToken stoppingToken = default);

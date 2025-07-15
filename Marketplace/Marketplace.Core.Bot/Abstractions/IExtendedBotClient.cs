@@ -1,8 +1,8 @@
-﻿using Marketplace.Core.Bot.Abstractions;
-using Marketplace.Core.Bot.Models;
+﻿using Marketplace.Bot.Abstractions;
+using Marketplace.Bot.Models;
 using Marketplace.Core.Models.UserStates;
 
-namespace Marketplace.Core.Bot.Logic.Abstractions;
+namespace Marketplace.Core.Bot.Abstractions;
 
 public interface IExtendedBotClient : IBotClient
 {

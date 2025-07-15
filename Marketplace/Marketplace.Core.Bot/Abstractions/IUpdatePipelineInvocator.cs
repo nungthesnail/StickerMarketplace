@@ -1,4 +1,4 @@
-﻿using Marketplace.Core.Bot.Models;
+﻿using Marketplace.Bot.Models;
 
 namespace Marketplace.Core.Bot.Abstractions;
 

@@ -1,6 +1,7 @@
-﻿using Marketplace.Core.Bot.Abstractions;
+﻿using Marketplace.Bot.Abstractions;
+using Marketplace.Bot.Models;
+using Marketplace.Core.Bot.Abstractions;
 using Marketplace.Core.Bot.Logic.Abstractions;
-using Marketplace.Core.Bot.Models;
 using Marketplace.Core.Models;
 using Marketplace.Core.Models.UserStates;
 using Microsoft.Extensions.Logging;

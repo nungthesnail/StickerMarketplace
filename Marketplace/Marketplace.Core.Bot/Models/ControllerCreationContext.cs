@@ -1,4 +1,5 @@
-﻿using Marketplace.Core.Models;
+﻿using Marketplace.Bot.Models;
+using Marketplace.Core.Models;
 using Marketplace.Core.Models.UserStates;
 
 namespace Marketplace.Core.Bot.Models;

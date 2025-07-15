@@ -1,5 +1,5 @@
-﻿using Marketplace.Core.Bot.Abstractions;
-using Marketplace.Core.Bot.Models;
+﻿using Marketplace.Bot.Models;
+using Marketplace.Core.Bot.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Marketplace.Core.Bot.Implementations;

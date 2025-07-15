@@ -1,4 +1,4 @@
-﻿namespace Marketplace.Core.Bot.Models;
+﻿namespace Marketplace.Bot.Models;
 
 public class PreCheckoutQuery
 {

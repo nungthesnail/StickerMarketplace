@@ -1,11 +1,11 @@
-﻿using Marketplace.Core.Abstractions.Data;
+﻿using Marketplace.Bot.Models;
+using Marketplace.Core.Abstractions.Data;
 using Marketplace.Core.Bot.Abstractions;
-using Marketplace.Core.Bot.Models;
 using Marketplace.Core.Models;
 using Marketplace.Core.Models.UserStates;
 using Microsoft.Extensions.Logging;
 
-namespace Marketplace.Core.Bot.Implementations;
+namespace Marketplace.Core.Bot.Implementations.Middlewares;
 
 public class UpdatePipelineMiddleware(AbstractMiddleware? next, IUnitOfWork uow,
     ILogger<UpdatePipelineMiddleware> logger) : AbstractMiddleware(next)

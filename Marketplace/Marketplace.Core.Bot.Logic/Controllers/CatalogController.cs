@@ -1,4 +1,6 @@
 ﻿using Marketplace.Core.Abstractions.Services;
+using Marketplace.Bot.Abstractions;
+using Marketplace.Bot.Models;
 using Marketplace.Core.Bot.Abstractions;
 using Marketplace.Core.Bot.Logic.Abstractions;
 using Marketplace.Core.Bot.Models;
@@ -71,7 +73,7 @@ public class CatalogController(
             userState: UserState,
             text: text,
             parseMode: parseMode,
-            fileId: imageId.ToString(),
+            fileId: imageId,
             replyMarkup: replyMarkup,
             stoppingToken: stoppingToken);
     }

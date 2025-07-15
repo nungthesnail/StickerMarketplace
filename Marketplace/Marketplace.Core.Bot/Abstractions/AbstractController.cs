@@ -1,5 +1,7 @@
-﻿using Marketplace.Core.Abstractions.Services;
+﻿using Marketplace.Bot.Models;
+using Marketplace.Core.Abstractions.Services;
 using Marketplace.Core.Bot.Implementations;
+using Marketplace.Core.Bot.Implementations.Middlewares;
 using Marketplace.Core.Bot.Models;
 using Marketplace.Core.Models;
 using Marketplace.Core.Models.UserStates;
@@ -76,7 +78,7 @@ public abstract class AbstractController(IControllerContext ctx)
         else if (_serviceProvider is not null)
         {
             var pipeline = _serviceProvider.GetRequiredService<UpdatePipelineMiddleware>();
-            await pipeline.InvokeAsync(ctx.User, ctx.UserState, ctx.Update, stoppingToken);
+            await pipeline.InvokeAsync(Context.User, Context.UserState, Context.Update, stoppingToken);
         }
     }
 }

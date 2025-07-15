@@ -1,9 +1,10 @@
-﻿using Marketplace.Core.Bot.Abstractions;
+﻿using Marketplace.Bot.Models;
+using Marketplace.Core.Bot.Abstractions;
 using Marketplace.Core.Bot.Models;
 using Marketplace.Core.Models;
 using Marketplace.Core.Models.UserStates;
 
-namespace Marketplace.Core.Bot.Logic.Middlewares;
+namespace Marketplace.Core.Bot.Implementations.Middlewares;
 
 public class ControllerDispatcherMiddleware(IControllerFactory controllerFactory) : AbstractMiddleware
 {

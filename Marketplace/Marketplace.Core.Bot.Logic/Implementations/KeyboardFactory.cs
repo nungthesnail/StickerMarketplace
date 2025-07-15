@@ -1,5 +1,5 @@
-﻿using Marketplace.Core.Bot.Logic.Abstractions;
-using Marketplace.Core.Bot.Models;
+﻿using Marketplace.Bot.Models;
+using Marketplace.Core.Bot.Logic.Abstractions;
 using Marketplace.Core.Models;
 
 namespace Marketplace.Core.Bot.Logic.Implementations;

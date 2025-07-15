@@ -1,6 +1,4 @@
-﻿using Marketplace.Core.Bot.Implementations;
-
-namespace Marketplace.Core.Bot.Abstractions;
+﻿namespace Marketplace.Core.Bot.Abstractions;
 
 public interface IUpdatePipelineBuilder
 {
