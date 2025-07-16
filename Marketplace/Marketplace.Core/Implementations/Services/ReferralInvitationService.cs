@@ -13,8 +13,9 @@ public class ReferralInvitationService(IUnitOfWork uow, ISubscriptionService sub
     public async Task<bool> IsUserInvitedAsync(long userId, CancellationToken stoppingToken = default)
         => await uow.ReferralInvitationRepository.AnyAsync(x => x.InvitedUserId == userId, stoppingToken);
     
-    public async Task CreateInvitationAsync(ReferralInvitation invitation, bool openTransaction = true,
-        bool updateInvitations = true, CancellationToken stoppingToken = default)
+    public async Task<(bool InvitedRenewed, bool InvitingRenewed, double DaysCount)> CreateInvitationAsync(
+        ReferralInvitation invitation, bool openTransaction = true, bool updateInvitations = true,
+        CancellationToken stoppingToken = default)
     {
         if (openTransaction)
         {
@@ -40,39 +41,32 @@ public class ReferralInvitationService(IUnitOfWork uow, ISubscriptionService sub
             throw new InvalidOperationException("Error while giving subscription for invitation. " +
                                                 $"Invited user id={invitation.InvitingUserId}");
         }
-        
+
+        var invitingRenewed = false;
         if (updateInvitations)
         {
-            var success = await UpdateUserInvitationsAsync(invitation.InvitingUserId,
+            invitingRenewed = await UpdateUserInvitationsAsync(invitation.InvitingUserId,
                 openTransaction: false, stoppingToken: stoppingToken);
-            if (!success)
-            {
-                if (openTransaction)
-                    await uow.RollbackTransactionAsync(stoppingToken);
-                throw new InvalidOperationException("Error while giving subscription for invitation. " +
-                                                    $"Inviting user id={invitation.InvitedUserId}");
-            }
         }
         
         await uow.SaveChangesAsync(stoppingToken);
         await uow.CommitTransactionAsync(stoppingToken);
+
+        return (true, invitingRenewed, settings.SubscriptionRenewDays);
     }
 
     private async Task<bool> RenewSubscriptionAsync(long userId, CancellationToken stoppingToken = default)
     {
         var subscriptionRenewInterval = TimeSpan.FromDays(settings.SubscriptionRenewDays);
-        var subscription = await subscriptionService.GetByUserIdAsync(userId, stoppingToken);
-        if (subscription is null)
-            return false;
-
-        await subscriptionService.RenewSubscriptionAsync(
-            id: subscription.Id,
+        await subscriptionService.RenewSubscriptionByUserIdAsync(
+            userId: userId,
             timeSpan: subscriptionRenewInterval,
             enhanced: settings.IsSubscriptionEnhanced,
             stoppingToken: stoppingToken);
         return true;
     }
     
+    /// <inheritdoc />
     /// <returns>Operation success</returns>
     public async Task<bool> UpdateUserInvitationsAsync(long userId, bool openTransaction = true,
         CancellationToken stoppingToken = default)

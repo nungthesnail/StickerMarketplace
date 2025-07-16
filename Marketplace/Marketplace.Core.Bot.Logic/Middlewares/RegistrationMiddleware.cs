@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using Marketplace.Core.Abstractions.Services;
-using Marketplace.Bot.Abstractions;
 using Marketplace.Bot.Models;
 using Marketplace.Core.Bot.Abstractions;
 using Marketplace.Core.Bot.Logic.Abstractions;
@@ -232,10 +231,17 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
         if (state.InvitedByUserId is not null)
         {
             var invitation = CreateReferralInvitation(state.UserId, state.InvitedByUserId.Value);
-            await referralService.CreateInvitationAsync(
+            var renews = await referralService.CreateInvitationAsync(
                 invitation: invitation,
                 openTransaction: true,
                 updateInvitations: true,
+                stoppingToken: stoppingToken);
+            await SendRenewsNotificationsAsync(
+                invitedRenewed: renews.InvitedRenewed,
+                invitedId: state.UserId,
+                invitingRenewed: renews.InvitingRenewed,
+                invitingId: state.InvitedByUserId.Value,
+                daysCount: renews.DaysCount,
                 stoppingToken: stoppingToken);
         }
 
@@ -247,6 +253,37 @@ public partial class RegistrationMiddleware(IUserStateService userStateService, 
         
         // To go to the next step
         await (Next?.InvokeAsync(user, nextState, update, stoppingToken) ?? Task.CompletedTask);
+    }
+
+    private async Task SendRenewsNotificationsAsync(bool invitedRenewed, long invitedId, bool invitingRenewed,
+        long invitingId, double daysCount, CancellationToken stoppingToken)
+    {
+        var replica = assetProvider.GetTextReplica(AssetKeys.Text.SubscriptionRenewed,
+            out var parseMode, out var imageUrl, out var replyMarkup, out var effectId,
+            $"{daysCount:F0}");
+        
+        if (invitedRenewed)
+        {
+            await bot.SendAsync(
+                chatId: invitedId,
+                text: replica,
+                parseMode: parseMode,
+                photoUrl: imageUrl,
+                replyMarkup: replyMarkup,
+                messageEffectId: effectId,
+                stoppingToken: stoppingToken);
+        }
+        if (invitingRenewed)
+        {
+            await bot.SendAsync(
+                chatId: invitingId,
+                text: replica,
+                parseMode: parseMode,
+                photoUrl: imageUrl,
+                replyMarkup: replyMarkup,
+                messageEffectId: effectId,
+                stoppingToken: stoppingToken);
+        }
     }
 
     private Subscription CreateSubscription(long userId)

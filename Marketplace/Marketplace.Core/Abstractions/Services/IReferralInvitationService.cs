@@ -6,8 +6,9 @@ public interface IReferralInvitationService
 {
     Task<bool> IsUserInvitedAsync(long userId, CancellationToken stoppingToken = default);
 
-    Task CreateInvitationAsync(ReferralInvitation invitation, bool openTransaction = true,
-        bool updateInvitations = true, CancellationToken stoppingToken = default);
+    Task<(bool InvitedRenewed, bool InvitingRenewed, double DaysCount)> CreateInvitationAsync(
+        ReferralInvitation invitation, bool openTransaction = true, bool updateInvitations = true,
+        CancellationToken stoppingToken = default);
 
     /// <returns>Operation success</returns>
     Task<bool> UpdateUserInvitationsAsync(long userId, bool openTransaction = true,

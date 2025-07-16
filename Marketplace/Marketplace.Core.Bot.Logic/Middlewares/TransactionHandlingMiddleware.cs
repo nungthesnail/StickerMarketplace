@@ -119,7 +119,8 @@ public class TransactionHandlingMiddleware(IBotClient bot, ITransactionService t
         
         var replica = assetProvider.GetTextReplica(AssetKeys.Text.SubscriptionRenewed,
             out var parseMode, out var imageUrl, out var replyMarkup, out var effectId,
-            priceInfo.DayCount);
+            $"{priceInfo.DayCount:F0}");
+        
         await bot.SendAsync(
             chatId: userId,
             text: replica,
