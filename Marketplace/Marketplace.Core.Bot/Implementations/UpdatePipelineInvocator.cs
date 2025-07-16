@@ -8,9 +8,8 @@ public class UpdatePipelineInvocator(IServiceProvider serviceProvider) : IUpdate
 {
     public async Task InvokePipelineAsync(Update update, CancellationToken stoppingToken = default)
     {
-        await using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateAsyncScope();
         var pipelineBuilder = serviceProvider.GetRequiredService<IUpdatePipelineBuilder>();
-        var pipeline = pipelineBuilder.BuildPipeline(scope.ServiceProvider);
+        var pipeline = pipelineBuilder.BuildPipeline(serviceProvider);
         await pipeline.InvokeAsync(null, null, update, stoppingToken);
     }
 }

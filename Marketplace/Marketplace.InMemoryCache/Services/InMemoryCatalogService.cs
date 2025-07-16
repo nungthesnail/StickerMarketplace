@@ -5,14 +5,14 @@ using Marketplace.Core.Models.Catalog;
 
 namespace Marketplace.InMemoryCache.Services;
 
-public class CatalogService : ICatalogService
+public class InMemoryCatalogService : ICatalogService
 {
     private readonly IProjectService _projectService;
     private readonly object _updateLock = new();
     
     private List<Project>? _orderedProjects;
     
-    public CatalogService(IProjectService projectService, ICatalogRefreshService catalogRefresher)
+    public InMemoryCatalogService(IProjectService projectService, ICatalogRefreshService catalogRefresher)
     {
         _projectService = projectService;
         catalogRefresher.OnCatalogRefreshed += UpdateCatalogAsync;

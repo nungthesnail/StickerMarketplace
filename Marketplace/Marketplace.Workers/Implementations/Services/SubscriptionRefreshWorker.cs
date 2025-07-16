@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Marketplace.Workers.Implementations.Services;
 
-public class SubscriptionRefreshWorker(ISubscriptionRefreshService subscriptionRefresher, IServiceProvider services,
-    WorkerSettings settings, ILogger<SubscriptionRefreshWorker> logger) : AbstractWorker(settings, logger)
+public class SubscriptionRefreshWorker(IServiceProvider services, WorkerSettings settings,
+    ILogger<SubscriptionRefreshWorker> logger) : AbstractWorker(settings, logger)
 {
     protected override async Task PerformIterationAsync(CancellationToken stoppingToken)
     {
