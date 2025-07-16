@@ -6,17 +6,21 @@ using Microsoft.Extensions.Logging;
 
 namespace Marketplace.Workers.Implementations.Services;
 
-public class CatalogRefresherServiceWorker(
-    IServiceProvider serviceProvider, WorkerSettings settings, ILogger<CatalogRefresherServiceWorker> logger)
+public class CatalogRefresherWorker(
+    IServiceProvider serviceProvider, WorkerSettings settings, ILogger<CatalogRefresherWorker> logger)
     : AbstractWorker(settings, logger)
 {
     protected override async Task PerformIterationAsync(CancellationToken stoppingToken)
     {
         try
         {
+            logger.LogDebug("Refreshing catalog");
+            
             await using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateAsyncScope();
-            var service = scope.ServiceProvider.GetRequiredService<ICatalogRefresherService>();
+            var service = scope.ServiceProvider.GetRequiredService<ICatalogRefreshService>();
             await service.RefreshCatalogAsync(stoppingToken);
+            
+            logger.LogInformation("Catalog refreshed");
         }
         catch (Exception exc)
         {

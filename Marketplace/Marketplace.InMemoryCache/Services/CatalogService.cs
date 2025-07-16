@@ -12,7 +12,7 @@ public class CatalogService : ICatalogService
     
     private List<Project>? _orderedProjects;
     
-    public CatalogService(IProjectService projectService, ICatalogRefresherService catalogRefresher)
+    public CatalogService(IProjectService projectService, ICatalogRefreshService catalogRefresher)
     {
         _projectService = projectService;
         catalogRefresher.OnCatalogRefreshed += UpdateCatalogAsync;

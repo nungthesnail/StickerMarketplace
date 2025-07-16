@@ -6,7 +6,7 @@ using Marketplace.Utils;
 
 namespace Marketplace.Core.Implementations.Services;
 
-public class CatalogRefresherService(IUnitOfWork uow) : ICatalogRefresherService
+public class CatalogRefreshService(IUnitOfWork uow) : ICatalogRefreshService
 {
     public event AsyncEventHandler? OnCatalogRefreshed;
 
